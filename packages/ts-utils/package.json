@@ -1,0 +1,13 @@
+{
+  "name": "@modbox/ts-utils",
+  "version": "0.0.0",
+  "description": "Some utils for typescript development.",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "author": "Antoine Laffargue <antoine.laffargue@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "prepublish": "yarn build",
+    "build": "tsc"
+  }
+}

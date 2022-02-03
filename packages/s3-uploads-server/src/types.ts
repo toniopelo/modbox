@@ -86,10 +86,7 @@ export type S3Config = S3.Types.ClientConfiguration & {
   domain: string
 }
 export type S3Client = S3
-export type Config<
-  K extends string = string,
-  HasS3Client extends boolean = boolean,
-> = {
+export type Config<K extends string = string> = {
   /**
    * The configuration for the underlying s3 client.
    *
@@ -110,9 +107,10 @@ export type Config<
       mode: UploadMode
     }
   }
-} & (HasS3Client extends true
-  ? { s3Client: S3Client }
-  : { s3Client?: S3Client })
+}
+export type ConfigWithClient<K extends string = string> = Config<K> & {
+  s3Client: S3Client
+}
 
 export type ContextBase<UType extends string | number | symbol> = {
   [type in UType]: { initiate: unknown; complete: unknown }

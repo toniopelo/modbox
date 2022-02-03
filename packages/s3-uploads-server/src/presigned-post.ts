@@ -1,8 +1,8 @@
 import { TYPE_CONDITIONS } from './config'
-import { Config } from './types'
+import { ConfigWithClient } from './types'
 
 export const getPresignedPost = (
-  config: Config<string, true>,
+  config: ConfigWithClient,
   {
     mimetype,
     bucket,

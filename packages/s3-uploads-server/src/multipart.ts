@@ -3,10 +3,10 @@ import { hasNonNullableKeys } from '@modbox/ts-utils'
 
 import { TYPE_CONDITIONS, MULTIPART_CHUNK_SIZE } from './config'
 import { buildBucketHostname } from './helpers'
-import { Config } from './types'
+import { ConfigWithClient } from './types'
 
 export const getPartPresignedRequestInfo = (
-  config: Config<string, true>,
+  config: ConfigWithClient,
   {
     partNumber,
     uploadId,
@@ -53,7 +53,7 @@ export const getPartPresignedRequestInfo = (
 }
 
 export const initiatePresignedMultipartUpload = async (
-  config: Config<string, true>,
+  config: ConfigWithClient,
   {
     mimetype,
     bucket,
@@ -101,7 +101,7 @@ export const initiatePresignedMultipartUpload = async (
 }
 
 export const completeMultipartUpload = async (
-  config: Config<string, true>,
+  config: ConfigWithClient,
   {
     bucket,
     key,

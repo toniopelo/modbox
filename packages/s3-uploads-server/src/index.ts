@@ -21,19 +21,17 @@ export const setupUploadModule = <
             | undefined
         : Parameters<NonNullable<C['uploads'][type]['buildFinalKey']>>[1]
     }
-  }
+  },
 >(
   config: C,
 ): Module<C, UType, Ctx> & { s3Client: S3Client } => {
-  const s3Client = config.s3Client
-    ? config.s3Client
-    : new S3({
-        ...config.s3Config,
-        // Use provided endpoint or build one from config
-        endpoint:
-          config.s3Config.endpoint ||
-          `https://s3.${config.s3Config.region}.${config.s3Config.domain}`,
-      })
+  const s3Client = new S3({
+    ...config.s3Config,
+    // Use provided endpoint or build one from config
+    endpoint:
+      config.s3Config.endpoint ||
+      `https://s3.${config.s3Config.region}.${config.s3Config.domain}`,
+  })
 
   const keys = Object.keys(config.uploads) as UType[]
   const module = keys.reduce((module: Module<C, UType, Ctx>, uType) => {

@@ -1,7 +1,7 @@
 import path from 'path'
 import { Readable } from 'stream'
 
-import { Config, S3Location, S3Object } from './types'
+import { Config, ConfigWithClient, S3Location, S3Object } from './types'
 
 const sanitize = (str: string): string => {
   return str
@@ -28,7 +28,7 @@ export const getCleanFilename = (filename: string): string => {
 }
 
 export const downloadObject = (
-  config: Config<string, true>,
+  config: ConfigWithClient,
   obj: S3Location,
 ): Readable => {
   return config.s3Client
@@ -40,7 +40,7 @@ export const downloadObject = (
 }
 
 export const moveObject = async (
-  config: Config<string, true>,
+  config: ConfigWithClient,
   from: S3Object,
   to: S3Location,
   acl: 'private' | 'public-read',
@@ -70,7 +70,7 @@ export const moveObject = async (
 }
 
 export const deleteObject = async (
-  config: Config<string, true>,
+  config: ConfigWithClient,
   obj: S3Location,
 ): Promise<void> => {
   // Get canDelete config value if provided or default to true

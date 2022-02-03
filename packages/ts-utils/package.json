@@ -12,5 +12,23 @@
   },
   "publishConfig": {
     "directory": "dist"
+  },
+  "prettier": "@modbox/prettier-config",
+  "eslintConfig": {
+    "extends": [
+      "@modbox/eslint-config"
+    ]
+  },
+  "devDependencies": {
+    "@modbox/eslint-config": "^0.0.0",
+    "@modbox/prettier-config": "^0.0.0",
+    "@typescript-eslint/eslint-plugin": "^5.10.2",
+    "@typescript-eslint/parser": "^5.10.2",
+    "eslint": "^8.8.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-jsdoc": "^37.7.1",
+    "eslint-plugin-prefer-arrow": "^1.2.3",
+    "prettier": "^2.5.1",
+    "typescript": "4.5.5"
   }
 }

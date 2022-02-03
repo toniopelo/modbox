@@ -7,45 +7,69 @@
   "settings": {
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": true
+    },
+    "eslint.workingDirectories": [{ "pattern": "./packages/*/" }],
     "[javascript]": {
       "editor.defaultFormatter": "esbenp.prettier-vscode",
-      "editor.formatOnSave": true
+      "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": true
+      }
     },
     "[javascriptreact]": {
       "editor.defaultFormatter": "esbenp.prettier-vscode",
-      "editor.formatOnSave": true
+      "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": true
+      }
     },
     "[typescript]": {
       "editor.defaultFormatter": "esbenp.prettier-vscode",
-      "editor.formatOnSave": true
+      "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": true
+      }
     },
     "[typescriptreact]": {
       "editor.defaultFormatter": "esbenp.prettier-vscode",
-      "editor.formatOnSave": true
+      "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": true
+      }
     },
     "[scss]": {
       "editor.defaultFormatter": "esbenp.prettier-vscode",
-      "editor.formatOnSave": true
+      "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": true
+      }
     },
     "[css]": {
       "editor.defaultFormatter": "esbenp.prettier-vscode",
-      "editor.formatOnSave": true
+      "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": true
+      }
     },
     "[html]": {
       "editor.defaultFormatter": "esbenp.prettier-vscode",
-      "editor.formatOnSave": true
+      "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": true
+      }
     },
     "[json]": {
       "editor.defaultFormatter": "esbenp.prettier-vscode",
-      "editor.formatOnSave": true
+      "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": true
+      }
     },
     "[jsonp]": {
       "editor.defaultFormatter": "esbenp.prettier-vscode",
-      "editor.formatOnSave": true
+      "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": true
+      }
     },
     "[eslintrc]": {
       "editor.defaultFormatter": "esbenp.prettier-vscode",
-      "editor.formatOnSave": true
+      "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": true
+      }
     }
   }
 }

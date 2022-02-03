@@ -36,7 +36,7 @@ export interface InitiatedUpload<
   UMode extends UploadMode = UploadMode,
   PRequest extends PresignedRequestInfo | null = UMode extends UploadMode.Multipart
     ? null
-    : PresignedRequestInfo
+    : PresignedRequestInfo,
 > {
   uploadType: UType
   uploadMode: UploadMode
@@ -67,7 +67,7 @@ export interface UploadedFile<
     | UploadedFileParts[]
     | undefined = UMode extends UploadMode.Multipart
     ? UploadedFileParts[]
-    : undefined
+    : undefined,
 > extends S3Object {
   uploadMode: UMode
   uploadId: string
@@ -88,7 +88,7 @@ export type S3Config = S3.Types.ClientConfiguration & {
 export type S3Client = S3
 export type Config<
   K extends string = string,
-  HasS3Client extends boolean = boolean
+  HasS3Client extends boolean = boolean,
 > = {
   /**
    * The configuration for the underlying s3 client.
@@ -101,6 +101,7 @@ export type Config<
    * ... and so on.
    */
   s3Config: S3Config
+  canDelete?: boolean | ((file: S3Location) => boolean | Promise<boolean>)
   uploads: {
     [key in K]: {
       bucket: string
@@ -120,7 +121,7 @@ export type UTypeBase<C extends Config> = keyof C['uploads'] & string
 export type Module<
   C extends Config,
   UType extends UTypeBase<C>,
-  Ctx extends ContextBase<UType>
+  Ctx extends ContextBase<UType>,
 > = {
   [key in UType]: {
     initiateOne: (

@@ -73,12 +73,18 @@ export const deleteObject = async (
   config: Config<string, true>,
   obj: S3Location,
 ): Promise<void> => {
-  // Never delete an object if not in production
-  // This avoid to delete a production object
-  // when importing prod database on another env
-  // if (env.NODE_ENV !== 'production') {
-  //   return
-  // }
+  // Get canDelete config value if provided or default to true
+  const canDelete =
+    config.canDelete === undefined
+      ? true
+      : typeof config.canDelete === 'function'
+      ? await config.canDelete(obj)
+      : config.canDelete
+
+  // If cannot delete, this is a no-op, we just return
+  if (!canDelete) {
+    return
+  }
 
   const r = await config.s3Client
     .deleteObject({

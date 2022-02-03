@@ -9,5 +9,8 @@
   "scripts": {
     "prepublish": "yarn build",
     "build": "tsc"
+  },
+  "publishConfig": {
+    "directory": "dist"
   }
 }

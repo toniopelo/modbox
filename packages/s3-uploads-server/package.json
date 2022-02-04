@@ -1,6 +1,6 @@
 {
   "name": "@modbox/s3-uploads-server",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "The backend package for s3-uploads module.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

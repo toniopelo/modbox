@@ -1,4 +1,5 @@
 import { S3 } from 'aws-sdk'
+import { Readable } from 'stream'
 
 export type S3Location = {
   bucket: string
@@ -80,6 +81,15 @@ export interface PartMetadata {
   partNumber: number
 }
 
+export type MimeTypeMatcher = string | RegExp
+export type MimeTypesConfig = Array<{
+  types: MimeTypeMatcher | MimeTypeMatcher[]
+  maxSize: number
+}>
+export type MimeTypesConfigPerUType<UType extends string> = {
+  [key in UType]: MimeTypesConfig
+}
+
 export type S3Config = S3.Types.ClientConfiguration & {
   region: NonNullable<S3.Types.ClientConfiguration['region']>
   credentials: NonNullable<S3.Types.ClientConfiguration['credentials']>
@@ -103,12 +113,16 @@ export type Config<K extends string = string> = {
    * @default export 5242880 (5242880 bytes = 5Mib)
    */
   multipartChunkSize?: number
+  mimeTypesConfig?: MimeTypesConfig
   uploads: {
     [key in K]: {
       bucket: string
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       buildKey: (fileToUpload: FileToUpload, ctx: any) => string
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       buildFinalKey?: (uploadedFile: UploadedFile, ctx: any) => string
       mode: UploadMode
+      mimeTypesConfig?: MimeTypesConfig
     }
   }
 }
@@ -152,4 +166,17 @@ export type Module<
     ) => Promise<S3Object[]>
     getPartRequest: (partMetadata: PartMetadata) => PresignedRequestInfo
   }
+}
+
+export interface UploadUtils {
+  buildObjectUrl: (bucket: string, key: string) => string
+  buildBucketHostname: (bucket: string) => string
+  downloadObject: (obj: S3Location) => Readable
+  getCleanFilename: (filename: string) => string
+  moveObject: (
+    from: S3Object,
+    to: S3Location,
+    acl: 'private' | 'public-read',
+  ) => Promise<S3Object>
+  deleteObject: (obj: S3Location) => Promise<void>
 }

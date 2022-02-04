@@ -1,7 +1,6 @@
 import aws4 from 'aws4'
 import { hasNonNullableKeys } from '@modbox/ts-utils'
 
-import { TYPE_CONDITIONS } from './config'
 import { buildBucketHostname } from './helpers'
 import { ConfigWithClient } from './types'
 
@@ -57,12 +56,10 @@ export const getPartPresignedRequestInfo = (
 export const initiatePresignedMultipartUpload = async (
   config: ConfigWithClient,
   {
-    mimetype,
     bucket,
     key,
     size,
   }: {
-    mimetype: string
     bucket: string
     key: string
     size: number
@@ -73,14 +70,6 @@ export const initiatePresignedMultipartUpload = async (
   chunkSize: number
   partsCount: number
 }> => {
-  const typeConditions = TYPE_CONDITIONS.find(({ types }) =>
-    types.some((t) => mimetype.includes(t)),
-  )
-  const matchingType = typeConditions?.types.find((t) => mimetype.includes(t))
-  if (!typeConditions || !matchingType) {
-    throw new Error('core.upload.error.unauthorized_file_type')
-  }
-
   const { UploadId: uploadId } = await config.s3Client
     .createMultipartUpload({
       Bucket: bucket,

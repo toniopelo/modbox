@@ -1,6 +1,11 @@
 import { v4 as uuidv4 } from 'uuid'
 
-import { buildObjectUrl, getCleanFilename, moveObject } from './helpers'
+import {
+  buildObjectUrl,
+  getCleanFilename,
+  isFileAllowed,
+  moveObject,
+} from './helpers'
 import {
   completeMultipartUpload,
   getPartPresignedRequestInfo,
@@ -17,11 +22,13 @@ import {
   PresignedRequestInfo,
   UTypeBase,
   ConfigWithClient,
+  MimeTypesConfigPerUType,
 } from './types'
 
 export const initiateOne =
   <C extends ConfigWithClient, UType extends UTypeBase<C>, Ctx>(
     config: C,
+    mimeTypesConfig: MimeTypesConfigPerUType<UType>,
     uType: UType,
   ) =>
   async (
@@ -32,6 +39,11 @@ export const initiateOne =
     const sanitizedFile = {
       ...file,
       filename: getCleanFilename(file.filename),
+    }
+
+    // Check if file is allowed by mimetypes config
+    if (!isFileAllowed(mimeTypesConfig[uType], sanitizedFile)) {
+      throw new Error('file_not_allowed_by_mimetypes_config')
     }
 
     const { mode, bucket, buildKey } = config.uploads[uType]
@@ -49,14 +61,18 @@ export const initiateOne =
         size,
         chunkSize: size,
         partsCount: 1,
-        presignedRequest: getPresignedPost(config, { bucket, mimetype, key }),
+        presignedRequest: getPresignedPost(config, {
+          bucket,
+          mimetype,
+          key,
+          size,
+        }),
       }
     } else {
       const { chunkSize, partsCount, uploadId } =
         await initiatePresignedMultipartUpload(config, {
           bucket,
           key,
-          mimetype,
           size,
         })
 
@@ -79,13 +95,14 @@ export const initiateOne =
 export const initiateMany =
   <C extends ConfigWithClient, UType extends UTypeBase<C>, Ctx>(
     config: C,
+    mimeTypesConfig: MimeTypesConfigPerUType<UType>,
     uType: UType,
   ) =>
   (
     files: FileToUpload[],
     ...ctx: undefined extends Ctx ? [Ctx?] : [Ctx]
   ): Promise<InitiatedUpload<UType>[]> => {
-    const initiateOneFn = initiateOne(config, uType)
+    const initiateOneFn = initiateOne(config, mimeTypesConfig, uType)
     return Promise.all(files.map((f) => initiateOneFn(f, ...ctx)))
   }
 

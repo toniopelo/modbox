@@ -1,5 +1,6 @@
 import { S3 } from 'aws-sdk'
 
+import { buildMimeTypesConfig, getUtils } from './helpers'
 import {
   initiateOne,
   initiateMany,
@@ -7,7 +8,14 @@ import {
   completeMany,
   getPartRequest,
 } from './operations'
-import { Module, Config, ContextBase, UTypeBase, S3Client } from './types'
+import {
+  Module,
+  Config,
+  ContextBase,
+  UTypeBase,
+  S3Client,
+  UploadUtils,
+} from './types'
 
 export const setupUploadModule = <
   C extends Config,
@@ -24,7 +32,7 @@ export const setupUploadModule = <
   },
 >(
   config: C,
-): Module<C, UType, Ctx> & { s3Client: S3Client } => {
+): Module<C, UType, Ctx> & { s3Client: S3Client; utils: UploadUtils } => {
   const s3Client = new S3({
     ...config.s3Config,
     // Use provided endpoint or build one from config
@@ -32,21 +40,27 @@ export const setupUploadModule = <
       config.s3Config.endpoint ||
       `https://s3.${config.s3Config.region}.${config.s3Config.domain}`,
   })
+  const configWithClient = { ...config, s3Client }
 
   const keys = Object.keys(config.uploads) as UType[]
+  const mimeTypeConfig = buildMimeTypesConfig<UType>(config)
   const module = keys.reduce((module: Module<C, UType, Ctx>, uType) => {
     module[uType] = {
-      initiateOne: initiateOne({ ...config, s3Client }, uType),
-      initiateMany: initiateMany({ ...config, s3Client }, uType),
-      completeOne: completeOne({ ...config, s3Client }, uType),
-      completeMany: completeMany({ ...config, s3Client }, uType),
-      getPartRequest: getPartRequest({ ...config, s3Client }, uType),
+      initiateOne: initiateOne(configWithClient, mimeTypeConfig, uType),
+      initiateMany: initiateMany(configWithClient, mimeTypeConfig, uType),
+      completeOne: completeOne(configWithClient, uType),
+      completeMany: completeMany(configWithClient, uType),
+      getPartRequest: getPartRequest(configWithClient, uType),
     }
 
     return module
   }, {} as Module<C, UType, Ctx>)
 
-  return { ...module, s3Client }
+  return {
+    ...module,
+    s3Client,
+    utils: getUtils(configWithClient),
+  }
 }
 
 export {
@@ -60,12 +74,8 @@ export {
   UploadMode,
   PresignedRequestInfo,
   PresignedRequestValues,
+  MimeTypeMatcher,
+  MimeTypesConfig,
 } from './types'
-export {
-  downloadObject,
-  buildObjectUrl,
-  deleteObject,
-  moveObject,
-  getCleanFilename,
-} from './helpers'
+export { getUtils } from './helpers'
 export default setupUploadModule

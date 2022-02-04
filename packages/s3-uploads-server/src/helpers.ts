@@ -1,7 +1,17 @@
 import path from 'path'
 import { Readable } from 'stream'
 
-import { Config, ConfigWithClient, S3Location, S3Object } from './types'
+import {
+  Config,
+  ConfigWithClient,
+  S3Location,
+  S3Object,
+  MimeTypesConfigPerUType,
+  FileToUpload,
+  MimeTypesConfig,
+  MimeTypeMatcher,
+  UploadUtils,
+} from './types'
 
 const sanitize = (str: string): string => {
   return str
@@ -10,6 +20,51 @@ const sanitize = (str: string): string => {
     .toLowerCase()
     .replace(/[^a-zA-Z0-9]/g, '-')
     .replace(/--+/g, '-')
+}
+
+export const buildMimeTypesConfig = <UType extends string>(
+  config: Config<UType>,
+): MimeTypesConfigPerUType<UType> => {
+  const uploadTypes = Object.keys(config.uploads) as UType[]
+  return uploadTypes.reduce((acc, key) => {
+    return {
+      ...acc,
+      [key]: [
+        // Order is important here as the first match will be used
+        // We put the UType specific mime type first
+        ...(config.uploads[key].mimeTypesConfig || []),
+        ...(config.mimeTypesConfig || []),
+      ],
+    }
+  }, {} as MimeTypesConfigPerUType<UType>)
+}
+
+export const isFileAllowed = (
+  mimeTypesConfig: MimeTypesConfig,
+  file: FileToUpload,
+): boolean => {
+  const isMimeTypeMatch = (
+    typeMatcher: MimeTypeMatcher,
+    mimeType: string,
+  ): boolean => {
+    if (typeof typeMatcher === 'string') {
+      return mimeType === typeMatcher
+    } else {
+      return typeMatcher.test(mimeType)
+    }
+  }
+
+  const isAllowed = mimeTypesConfig.some((mimeTypeConfig) => {
+    const isMatch = Array.isArray(mimeTypeConfig.types)
+      ? mimeTypeConfig.types.some((typeMatcher) =>
+          isMimeTypeMatch(typeMatcher, file.mimetype),
+        )
+      : isMimeTypeMatch(mimeTypeConfig.types, file.mimetype)
+
+    return isMatch && mimeTypeConfig.maxSize >= file.size
+  })
+
+  return isAllowed
 }
 
 export const buildObjectUrl = (
@@ -97,3 +152,12 @@ export const deleteObject = async (
     throw r.$response.error
   }
 }
+
+export const getUtils = (config: ConfigWithClient): UploadUtils => ({
+  buildObjectUrl: (bucket, key) => buildObjectUrl(config, bucket, key),
+  buildBucketHostname: (bucket) => buildBucketHostname(config, bucket),
+  downloadObject: (obj) => downloadObject(config, obj),
+  getCleanFilename,
+  moveObject: (from, to, acl) => moveObject(config, from, to, acl),
+  deleteObject: (obj) => deleteObject(config, obj),
+})

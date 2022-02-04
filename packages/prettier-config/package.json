@@ -1,6 +1,6 @@
 {
   "name": "@modbox/prettier-config",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Shareable prettier config.",
   "main": "index.js",
   "license": "MIT",

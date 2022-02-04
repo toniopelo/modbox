@@ -1,6 +1,6 @@
 {
   "name": "@modbox/s3-uploads-server",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "The backend package for s3-uploads module.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -16,14 +16,14 @@
     ]
   },
   "dependencies": {
-    "@modbox/prettier-config": "^0.0.0",
-    "@modbox/ts-utils": "^0.0.0",
+    "@modbox/prettier-config": "^0.1.0",
+    "@modbox/ts-utils": "^0.1.0",
     "aws-sdk": "2.1030.0",
     "aws4": "1.11.0",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
-    "@modbox/eslint-config": "^0.0.0",
+    "@modbox/eslint-config": "^0.1.0",
     "@modbox/prettier-config": "^0.0.0",
     "@types/aws-sdk": "^2.7.0",
     "@types/aws4": "1.11.0",

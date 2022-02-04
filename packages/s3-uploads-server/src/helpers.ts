@@ -161,7 +161,7 @@ export const doesObjectExist = async (
     await config.s3Client
       .headObject({
         Bucket: obj.bucket,
-        Key: `${obj.key}false`,
+        Key: obj.key,
       })
       .promise()
 

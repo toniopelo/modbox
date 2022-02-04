@@ -41,8 +41,8 @@ export const getPartPresignedRequestInfo = (
     },
   )
 
-  if (!hasNonNullableKeys(presignedRequest, ['headers'])) {
-    throw new Error('invalid_presigned_request_headers')
+  if (!hasNonNullableKeys(presignedRequest, ['headers', 'host', 'path'])) {
+    throw new Error('invalid_presigned_request_data')
   }
 
   return {

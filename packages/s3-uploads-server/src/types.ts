@@ -81,7 +81,7 @@ export interface PartMetadata {
 }
 
 export type S3Config = S3.Types.ClientConfiguration & {
-  region: S3.Types.ClientConfiguration['region']
+  region: NonNullable<S3.Types.ClientConfiguration['region']>
   credentials: NonNullable<S3.Types.ClientConfiguration['credentials']>
   domain: string
 }

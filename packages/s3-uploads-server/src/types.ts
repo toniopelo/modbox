@@ -96,6 +96,13 @@ export type S3Config = S3.Types.ClientConfiguration & {
   domain: string
 }
 export type S3Client = S3
+
+export type OnKeyConflictHandler = (
+  key: string,
+  tryCount: number,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ctx: any,
+) => string | Promise<string>
 export type Config<K extends string = string> = {
   /**
    * The configuration for the underlying s3 client.
@@ -116,13 +123,15 @@ export type Config<K extends string = string> = {
   mimeTypesConfig?: MimeTypesConfig
   uploads: {
     [key in K]: {
+      allowReplace?: boolean
       bucket: string
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      buildKey: (fileToUpload: FileToUpload, ctx: any) => string
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       buildFinalKey?: (uploadedFile: UploadedFile, ctx: any) => string
-      mode: UploadMode
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      buildKey: (fileToUpload: FileToUpload, ctx: any) => string
       mimeTypesConfig?: MimeTypesConfig
+      mode: UploadMode
+      onKeyConflict?: OnKeyConflictHandler
     }
   }
 }

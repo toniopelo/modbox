@@ -11,6 +11,7 @@ import {
   MimeTypesConfig,
   MimeTypeMatcher,
   UploadUtils,
+  UTypeBase,
 } from './types'
 
 const sanitize = (str: string): string => {
@@ -168,6 +169,45 @@ export const doesObjectExist = async (
     return true
   } catch (e) {
     return false
+  }
+}
+
+export const getAvailableLocation = async <
+  C extends ConfigWithClient = ConfigWithClient,
+  UType extends UTypeBase<C> = UTypeBase<C>,
+>(
+  config: C,
+  uploadType: UType,
+  location: S3Location,
+  ctx: unknown,
+): Promise<S3Location> => {
+  // If replace is allowed, we just return the original location
+  if (config.uploads[uploadType].allowReplace) {
+    return location
+  }
+
+  const { onKeyConflict } = config.uploads[uploadType]
+  const exists = await doesObjectExist(config, location)
+
+  if (!exists) {
+    return location
+  } else if (!onKeyConflict) {
+    throw new Error('object_key_already_taken')
+  } else {
+    const findNextAvailableKey = async (tryCount = 1): Promise<S3Location> => {
+      const nextKey = await onKeyConflict(location.key, tryCount, ctx)
+      const nextKeyExists = await doesObjectExist(config, {
+        ...location,
+        key: nextKey,
+      })
+
+      return nextKeyExists
+        ? await findNextAvailableKey(tryCount + 1)
+        : { ...location, key: nextKey }
+    }
+
+    const nextLocation = await findNextAvailableKey()
+    return nextLocation
   }
 }
 

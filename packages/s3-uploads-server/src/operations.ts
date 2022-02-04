@@ -1,7 +1,9 @@
+import path from 'path'
 import { v4 as uuidv4 } from 'uuid'
 
 import {
   buildObjectUrl,
+  getAvailableLocation,
   getCleanFilename,
   isFileAllowed,
   moveObject,
@@ -47,8 +49,18 @@ export const initiateOne =
     }
 
     const { mode, bucket, buildKey } = config.uploads[uType]
-    const { filename, mimetype, size } = sanitizedFile
-    const key = buildKey(sanitizedFile, ctx[0])
+    const { mimetype, size, filename } = sanitizedFile
+
+    // Build key and check if object key is already taken,
+    // if so, try to find a new one with onKeyConflict if provided, else throw an error
+    // If allowReplace config is true, then the key will not be changed even if conflicting with an existing object
+    const { key } = await getAvailableLocation(
+      config,
+      uType,
+      { bucket, key: buildKey(sanitizedFile, ctx[0]) },
+      ctx[0],
+    )
+
     if (mode === UploadMode.Single) {
       return {
         uploadId: uuidv4(),
@@ -116,16 +128,18 @@ export const completeOne =
     ...ctx: undefined extends Ctx ? [Ctx?] : [Ctx]
   ): Promise<S3Object> => {
     const { bucket, buildFinalKey } = config.uploads[uType]
-    const {
-      filename,
-      mimetype,
-      size,
-      parts,
-      uploadId,
-      uploadMode: mode,
-      key,
-    } = file
-    const finalKey = buildFinalKey ? buildFinalKey(file, ctx[0]) : key
+    const { mimetype, size, parts, uploadId, uploadMode: mode, key } = file
+
+    // Build final key and check if object key is already taken,
+    // if so, try to find a new one with onKeyConflict if provided, else throw an error
+    // If allowReplace config is true, then the key will not be changed even if conflicting with an existing object
+    const { key: finalKey } = await getAvailableLocation(
+      config,
+      uType,
+      { bucket, key: buildFinalKey ? buildFinalKey(file, ctx[0]) : key },
+      ctx[0],
+    )
+    const filename = path.basename(finalKey)
 
     // For multipart uploads, we need to complete the upload
     if (mode === UploadMode.Multipart) {

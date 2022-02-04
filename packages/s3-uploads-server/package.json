@@ -16,7 +16,6 @@
     ]
   },
   "dependencies": {
-    "@modbox/prettier-config": "^0.1.0",
     "@modbox/ts-utils": "^0.1.0",
     "aws-sdk": "2.1030.0",
     "aws4": "1.11.0",

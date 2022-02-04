@@ -89,7 +89,6 @@ export type S3Client = S3
 export type Config<K extends string = string> = {
   /**
    * The configuration for the underlying s3 client.
-   *
    * @requires domain, region and credentials to be set
    *
    * @example amazonaws.com for endpoints like `https://${bucket}.s3.${region}.amazonaws.com`
@@ -99,6 +98,11 @@ export type Config<K extends string = string> = {
    */
   s3Config: S3Config
   canDelete?: boolean | ((file: S3Location) => boolean | Promise<boolean>)
+  /**
+   * Maximum size of a multipart file chunk in bytes.
+   * @default export 5242880 (5242880 bytes = 5Mib)
+   */
+  multipartChunkSize?: number
   uploads: {
     [key in K]: {
       bucket: string

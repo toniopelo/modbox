@@ -1,4 +1,3 @@
-export const MULTIPART_CHUNK_SIZE = 10485760 // 10Mb = 10485760 bytes
 export const TYPE_CONDITIONS = [
   {
     // All images

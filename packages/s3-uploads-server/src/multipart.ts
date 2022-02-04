@@ -1,9 +1,11 @@
 import aws4 from 'aws4'
 import { hasNonNullableKeys } from '@modbox/ts-utils'
 
-import { TYPE_CONDITIONS, MULTIPART_CHUNK_SIZE } from './config'
+import { TYPE_CONDITIONS } from './config'
 import { buildBucketHostname } from './helpers'
 import { ConfigWithClient } from './types'
+
+const DEFAULT_MULTIPART_CHUNK_SIZE = 5242880 // 5Mib = 5242880 bytes
 
 export const getPartPresignedRequestInfo = (
   config: ConfigWithClient,
@@ -90,10 +92,12 @@ export const initiatePresignedMultipartUpload = async (
     throw new Error('core.lib.error.generic_message')
   }
 
-  const partsCount = Math.ceil(size / MULTIPART_CHUNK_SIZE)
+  const partsCount = Math.ceil(
+    size / (config.multipartChunkSize || DEFAULT_MULTIPART_CHUNK_SIZE),
+  )
 
   return {
-    chunkSize: MULTIPART_CHUNK_SIZE,
+    chunkSize: config.multipartChunkSize || DEFAULT_MULTIPART_CHUNK_SIZE,
     size,
     partsCount,
     uploadId,

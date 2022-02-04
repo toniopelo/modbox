@@ -171,6 +171,8 @@ export type Module<
 export interface UploadUtils {
   buildObjectUrl: (bucket: string, key: string) => string
   buildBucketHostname: (bucket: string) => string
+  deleteObject: (obj: S3Location) => Promise<void>
+  doesObjectExist: (obj: S3Location) => Promise<boolean>
   downloadObject: (obj: S3Location) => Readable
   getCleanFilename: (filename: string) => string
   moveObject: (
@@ -178,5 +180,4 @@ export interface UploadUtils {
     to: S3Location,
     acl: 'private' | 'public-read',
   ) => Promise<S3Object>
-  deleteObject: (obj: S3Location) => Promise<void>
 }

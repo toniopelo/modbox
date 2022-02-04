@@ -153,11 +153,30 @@ export const deleteObject = async (
   }
 }
 
+export const doesObjectExist = async (
+  config: ConfigWithClient,
+  obj: S3Location,
+): Promise<boolean> => {
+  try {
+    await config.s3Client
+      .headObject({
+        Bucket: obj.bucket,
+        Key: `${obj.key}false`,
+      })
+      .promise()
+
+    return true
+  } catch (e) {
+    return false
+  }
+}
+
 export const getUtils = (config: ConfigWithClient): UploadUtils => ({
   buildObjectUrl: (bucket, key) => buildObjectUrl(config, bucket, key),
   buildBucketHostname: (bucket) => buildBucketHostname(config, bucket),
+  deleteObject: (obj) => deleteObject(config, obj),
+  doesObjectExist: (obj) => doesObjectExist(config, obj),
   downloadObject: (obj) => downloadObject(config, obj),
   getCleanFilename,
   moveObject: (from, to, acl) => moveObject(config, from, to, acl),
-  deleteObject: (obj) => deleteObject(config, obj),
 })

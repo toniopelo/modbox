@@ -26,7 +26,7 @@
   },
   "devDependencies": {
     "@modbox/eslint-config": "^0.1.0",
-    "@modbox/prettier-config": "^0.0.0",
+    "@modbox/prettier-config": "^0.1.0",
     "@types/aws-sdk": "^2.7.0",
     "@types/aws4": "1.11.0",
     "@types/node": "^17.0.14",

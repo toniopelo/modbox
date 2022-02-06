@@ -10,9 +10,9 @@
     "prepublish": "yarn build",
     "build": "tsc"
   },
-  "publishConfig": {
-    "directory": "dist"
-  },
+  "files": [
+    "dist"
+  ],
   "prettier": "@modbox/prettier-config",
   "eslintConfig": {
     "extends": [

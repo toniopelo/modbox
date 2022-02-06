@@ -1,6 +1,6 @@
 {
   "name": "@modbox/ts-utils",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Some utils for typescript development.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -29,8 +29,8 @@
     ]
   },
   "devDependencies": {
-    "@modbox/eslint-config": "^0.1.0",
-    "@modbox/prettier-config": "^0.1.0",
+    "@modbox/eslint-config": "^0.1.1",
+    "@modbox/prettier-config": "^0.1.1",
     "@typescript-eslint/eslint-plugin": "^5.10.2",
     "@typescript-eslint/parser": "^5.10.2",
     "eslint": "^8.8.0",

@@ -4,6 +4,15 @@
   "description": "Shareable prettier config.",
   "main": "index.js",
   "license": "MIT",
+  "homepage": "https://github.com/toniopelo/modbox/tree/master/packages/prettier-config#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/toniopelo/modbox.git",
+    "directory": "packages/prettier-config"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "peerDependencies": {
     "prettier": "^2.5.1"
   }

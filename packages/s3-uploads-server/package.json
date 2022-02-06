@@ -5,6 +5,12 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "license": "MIT",
+  "homepage": "https://github.com/toniopelo/modbox/tree/master/packages/s3-uploads-server#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/toniopelo/modbox.git",
+    "directory": "packages/s3-uploads-server"
+  },
   "scripts": {
     "prepublish": "yarn build",
     "build": "tsc"
@@ -12,6 +18,9 @@
   "files": [
     "dist"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "prettier": "@modbox/prettier-config",
   "eslintConfig": {
     "extends": [

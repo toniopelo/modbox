@@ -6,6 +6,12 @@
   "types": "dist/index.d.ts",
   "author": "Antoine Laffargue <antoine.laffargue@gmail.com>",
   "license": "MIT",
+  "homepage": "https://github.com/toniopelo/modbox/tree/master/packages/ts-utils#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/toniopelo/modbox.git",
+    "directory": "packages/ts-utils"
+  },
   "scripts": {
     "prepublish": "yarn build",
     "build": "tsc"
@@ -13,6 +19,9 @@
   "files": [
     "dist"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "prettier": "@modbox/prettier-config",
   "eslintConfig": {
     "extends": [

@@ -4,6 +4,11 @@
   "description": "Shareable prettier config.",
   "main": "index.js",
   "license": "MIT",
+  "keywords": [
+    "prettier",
+    "config"
+  ],
+  "author": "Antoine Laffargue <antoine.laffargue@gmail.com>",
   "homepage": "https://github.com/toniopelo/modbox/tree/master/packages/prettier-config#readme",
   "repository": {
     "type": "git",

@@ -53,8 +53,8 @@ export interface InitiatedUpload<
 }
 
 export enum UploadMode {
-  Multipart = 'multipart',
-  Single = 'single',
+  Multipart = 'Multipart',
+  Single = 'Single',
 }
 
 export interface UploadedFileParts {

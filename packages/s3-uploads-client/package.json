@@ -1,0 +1,42 @@
+{
+  "name": "@modbox/s3-uploads-client",
+  "version": "0.0.0",
+  "description": "The frontend package for s3-uploads module.",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "keywords": [
+    "s3",
+    "uploads",
+    "presigned",
+    "multipart",
+    "client",
+    "browser"
+  ],
+  "author": "Antoine Laffargue <antoine.laffargue@gmail.com>",
+  "homepage": "https://github.com/toniopelo/modbox/tree/master/packages/s3-uploads-client#readme",
+  "license": "MIT",
+  "files": [
+    "dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/toniopelo/modbox.git",
+    "directory": "packages/s3-uploads-client"
+  },
+  "scripts": {
+    "prepublish": "yarn build",
+    "build": "tsc"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "prettier": "@modbox/prettier-config",
+  "eslintConfig": {
+    "extends": [
+      "@modbox/eslint-config"
+    ]
+  },
+  "bugs": {
+    "url": "https://github.com/toniopelo/modbox/issues"
+  }
+}

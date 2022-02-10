@@ -64,3 +64,29 @@ export const setupUploadModule = <
 
   return module
 }
+
+export {
+  CancellableUpload,
+  Config,
+  CompleteOperationConfig,
+  InitiateOperationConfig,
+  FileToUpload,
+  InitiatedUpload,
+  InitiatedUploadWithFile,
+  Module,
+  MultipartUploadChunk,
+  OneUploadCompleteCallback,
+  PartRequestFetcher,
+  PendingUpload,
+  PendingUploads,
+  PresignedRequestInfo,
+  S3Object,
+  UploadCompleter,
+  UploadCompleteCallback,
+  UploadErrorCallback,
+  UploadInitiator,
+  UploadProgressCallback,
+  UploadMode,
+  UploadedFile,
+} from './types'
+export default setupUploadModule

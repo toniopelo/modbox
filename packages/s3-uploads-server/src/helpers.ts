@@ -97,7 +97,7 @@ export const downloadObject = (
 
 export const moveObject = async (
   config: ConfigWithClient,
-  from: S3Object,
+  from: Omit<S3Object, 'url' | 'filename'>,
   to: S3Location,
   acl: 'private' | 'public-read',
 ): Promise<S3Object> => {

@@ -69,7 +69,7 @@ export interface UploadedFile<
     | undefined = UMode extends UploadMode.Multipart
     ? UploadedFileParts[]
     : undefined,
-> extends S3Object {
+> extends Omit<S3Object, 'url'> {
   uploadMode: UMode
   uploadId: string
   parts: UParts

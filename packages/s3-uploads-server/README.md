@@ -2,7 +2,7 @@
 
 > Note: This is the server-side package for the s3-upload module, see [@modbox/s3-upload-client](htpps://github.com/toniopelo/modbox/tree/master/packages/s3-upload-client) for the client package.
 
-## s3-upload approach
+# s3-upload approach
 
 This lib abstracts away the complexity of presigned requests uploads to an S3-compatible object storage service.\
 Based on two (backend and frontend) simple configurations that define onse or several upload types, for each of which your can :
@@ -15,9 +15,11 @@ Based on two (backend and frontend) simple configurations that define onse or se
 
 Written in typescript with DX in mind.
 
-## Server-side usage
+# Server-side usage
 
 ### _Setup and config_
+
+---
 
 `utils/upload.ts`
 
@@ -175,6 +177,8 @@ app.listen(3000)
 
 ### _Configuration object_
 
+---
+
 This is the definition of the config object passed to `setupUploadModule`.
 
 | Property                  | Type                                                                                                | Required | Default        | Description                                                                                                                                                                                  |
@@ -194,4 +198,4 @@ This is the definition of the config object passed to `setupUploadModule`.
 
 ## Notes
 
-This lib is still in development and will be considered production-ready when it will reach version `1.0.0`. Use at your own risk. Breaking changes might occur before `1.0.0`, so you might want to use strict references in your `package.json` dependencies. After `1.0.0`, semver will be rigorously respected.
+This lib is still in development and will be considered production-ready when it reach version `1.0.0`. Use at your own risk. Breaking changes might occur before `1.0.0`, so you might want to use strict references in your `package.json` dependencies. After `1.0.0`, semver will be rigorously respected.

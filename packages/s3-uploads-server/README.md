@@ -24,6 +24,7 @@ Written in typescript with DX in mind.
 `utils/upload.ts`
 
 ```ts
+import path from 'path'
 import {
   setupUploadModule,
   FileToUpload,
@@ -105,7 +106,7 @@ export const uploadModule = setupUploadModule({
       If not provided and such case happens, the lib will throw (except if allowReplace is set to true) */
       onKeyConflict: (key: string, tryCount: number) => {
         const ext = path.extname(key)
-        return `${path.basename(key, ext)}-${tryCount}${ext}`
+        return `${key.substring(0, key.length - ext.length)}-${tryCount}${ext}`
       },
       // This adds PDF for this kind of uploads
       mimeTypesConfig: [PDF_TYPE_CONDITION],

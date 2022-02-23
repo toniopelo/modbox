@@ -76,6 +76,65 @@ export const uploadModule = setupUploadModule({
 })
 ```
 
+`components/page.tsx`
+
+```ts
+import React, { useState } from 'react'
+import { CancellableUpload, S3Object } from '@modbox/s3-uploads-client'
+
+import { ProgressBar } from 'components/ProgressBar'
+import { uploadModule } from 'utils/upload'
+
+const PageComponent = () => {
+  const [uploadProgress, setUploadProgress] = useState<{
+    total: number
+    completed: number
+  }>({ total: 1, completed: 0 })
+  const [uploads, setUploads] = useState<File[]>([])
+
+  const startUpload = () => {
+    const pendingUploads = await uploadModule.CommunityPost.uploadMany(
+      uploads,
+      {
+        onProgress: ({ completedChunksCount, totalChunksCount }) => {
+          setUploadProgress({
+            completed: completedChunksCount,
+            total: totalChunksCount,
+          })
+        },
+        onUploadComplete: (uploadCompleted, originalFile) => {
+          console.log('A file was uploaded')
+        },
+        onError: (uploadError) => {
+          console.error('Error: ', uploadError)
+        },
+      },
+    )
+  }
+
+  return (
+    <div>
+      <ProgressBar progress={uploadProgress} />
+
+      <input
+        type="file"
+        multiple
+        onChange={(e) => {
+          const fileList = (
+            e.target as unknown as {
+              files: FileList
+            }
+          ).files
+          setUploads(toFileArray(fileList))
+        }}
+      />
+
+      <button onClick={() => startUpload()}></button>
+    </div>
+  )
+}
+```
+
 ### _Configuration object_
 
 ---

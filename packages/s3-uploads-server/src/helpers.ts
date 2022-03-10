@@ -77,6 +77,33 @@ export const buildObjectUrl = (
 export const buildBucketHostname = (config: Config, bucket: string): string =>
   `${bucket}.s3.${config.s3Config.region}.${config.s3Config.domain}`
 
+export const getS3LocationFromUrl = (
+  config: Config,
+  url: string,
+): S3Location | null => {
+  const urlRegex = new RegExp(
+    `^https?://${buildBucketHostname(config, '(.+)')}/(.+)$`,
+  )
+  if (!urlRegex.test(url)) {
+    return null
+  }
+
+  // Remove protocol prefix from url
+  const urlWithoutProtocol = url.replace(/^https?:\/\//, '')
+  // Get bucket from url
+  const bucket = urlWithoutProtocol.split('.')[0]
+  // Get key from url
+  const key = urlWithoutProtocol.replace(
+    `${buildBucketHostname(config, bucket)}/`,
+    '',
+  )
+
+  return {
+    bucket,
+    key,
+  }
+}
+
 export const getCleanFilename = (filename: string): string => {
   const ext = path.extname(filename)
   const basename = path.basename(filename, ext)
@@ -212,6 +239,7 @@ export const getAvailableLocation = async <
 }
 
 export const getUtils = (config: ConfigWithClient): UploadUtils => ({
+  getS3LocationFromUrl: (url) => getS3LocationFromUrl(config, url),
   buildObjectUrl: (bucket, key) => buildObjectUrl(config, bucket, key),
   buildBucketHostname: (bucket) => buildBucketHostname(config, bucket),
   deleteObject: (obj) => deleteObject(config, obj),

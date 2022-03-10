@@ -178,6 +178,7 @@ export type Module<
 }
 
 export interface UploadUtils {
+  getS3LocationFromUrl: (url: string) => S3Location | null
   buildObjectUrl: (bucket: string, key: string) => string
   buildBucketHostname: (bucket: string) => string
   deleteObject: (obj: S3Location) => Promise<void>

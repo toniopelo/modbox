@@ -1,6 +1,6 @@
 # `@modbox/s3-uploads-client`
 
-> Note: This is the client-side package for the s3-upload module, see [@modbox/s3-upload-server](htpps://github.com/toniopelo/modbox/tree/master/packages/s3-upload-server) for the server package.
+> Note: This is the client-side package for the s3-upload module, see [@modbox/s3-upload-server](https://github.com/toniopelo/modbox/tree/master/packages/s3-upload-server) for the server package.
 
 # s3-upload approach
 
@@ -44,14 +44,18 @@ export const uploadModule = setupUploadModule({
   uploads: {
     [UploadType.Avatar]: {
       initiate: (files: File[]): Promise<InitiatedUpload[]> => {
-        // Do somthing here to communicate with your backend and return
-        // initiated uploads
+        // Do something here to communicate with your backend (see @modbox/s3-upload-server)
+        // and fetch presigned requests data (i.e. InitiatedUploads)
+        // for the files received as parameter.
+        // Return the backend response.
       },
     },
     [UploadType.CommunityPost]: {
       initiate: (files: File[]): Promise<InitiatedUpload[]> => {
-        // Do somthing here to communicate with your backend and return
-        // initiated uploads
+        // Do something here to communicate with your backend (see @modbox/s3-upload-server)
+        // and fetch presigned requests data (i.e. InitiatedUploads)
+        // for the files received as parameter.
+        // Return the backend response.
       },
       getPartRequest: async (
         chunk: MultipartUploadChunk,
@@ -62,8 +66,10 @@ export const uploadModule = setupUploadModule({
     },
     [UploadType.ResourceFiles]: {
       initiate: (files: File[]): Promise<InitiatedUpload[]> => {
-        // Do somthing here to communicate with your backend and return
-        // initiated uploads
+        // Do something here to communicate with your backend (see @modbox/s3-upload-server)
+        // and fetch presigned requests data (i.e. InitiatedUploads)
+        // for the files received as parameter.
+        // Return the backend response.
       },
       getPartRequest: async (
         chunk: MultipartUploadChunk,
@@ -145,7 +151,7 @@ This is the definition of the config object passed to `setupUploadModule`.
 | ------------------------ | ----------------------------------------------------------------- | -------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | maxConcurrentUploads     | `number`                                                          | false    | 2       | The number of concurrent uploads                                                                                                                                                                                                                                                                               |
 | uploads                  | _See below for full breakdown of this object_                     | **true** |         | This object defines the different upload types as keys and their specific config as value.                                                                                                                                                                                                                     |
-| _uploads_.initiate       | `(files: File[], ctx: any) => Promise<InitiatedUpload[]>`         | **true** |         | Handler that perform the network request to get the InitiatedUploads from the backend for a set of files passed as parameters. `ctx` is anything that you which to pass to your handler in order to perform the request.                                                                                       |
+| _uploads_.initiate       | `(files: File[], ctx: any) => Promise<InitiatedUpload[]>`         | **true** |         | Handler that perform the network request to get the presigned requests data (i.e. InitiatedUploads) from the backend for a set of files passed as parameters. `ctx` is anything that you which to pass to your handler in order to perform the request.                                                        |
 | _uploads_.complete       | `(files: UploadedFile[], ctx: any) => Promise<S3Object[]>`        | false    |         | Handler to perform a request in order to complete an upload. This is not needed as you might want to complete your upload by passing your `UploadedFile`s in the payload of another request depending on your use case. (e.g. Uploads that are part of a forum post could be passed along the post to create). |
 | _uploads_.getPartRequest | `(upload: MultipartUploadChunk) => Promise<PresignedRequestInfo>` | false    |         | Handler to fetch the needed presigned request for each part of your multipart upload. Required if your upload is set to `multipart`                                                                                                                                                                            |
 

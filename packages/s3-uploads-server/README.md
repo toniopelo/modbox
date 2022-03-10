@@ -1,6 +1,6 @@
 # `@modbox/s3-uploads-server`
 
-> Note: This is the server-side package for the s3-upload module, see [@modbox/s3-upload-client](https://github.com/toniopelo/modbox/tree/master/packages/s3-upload-client) for the client package.
+> Note: This is the server-side package for the s3-upload module, see [@modbox/s3-upload-client](https://www.npmjs.com/package/@modbox/s3-uploads-client) for the client package.
 
 # s3-upload approach
 

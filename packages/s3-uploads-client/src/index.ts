@@ -37,6 +37,7 @@ export const setupUploadModule = <
     const {
       maxConcurrentUploads = defaultMaxConcurrentUpload,
       initiate,
+      complete,
       getPartRequest,
     } = config.uploads[uType]
 
@@ -55,8 +56,11 @@ export const setupUploadModule = <
           getPartRequest,
           maxConcurrentUploads,
         }),
-        ...(config.uploads[uType].complete
-          ? { completeOne, completeMany }
+        ...(complete
+          ? {
+              completeOne: completeOne({ uploadType: uType, complete }),
+              completeMany: completeMany({ uploadType: uType, complete }),
+            }
           : {}),
       },
     }

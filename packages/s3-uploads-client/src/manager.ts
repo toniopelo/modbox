@@ -15,6 +15,25 @@ import {
   UploadProgressCallback,
 } from './types'
 
+type ChunkEtagCache = { [partNumber: number]: string };
+
+const _getCache = (uploadId: string) =>
+  JSON.parse(localStorage.getItem(`s3-upload-${uploadId}`) || '{}') as ChunkEtagCache;
+
+const _storeCache = (uploadId: string, cache: ChunkEtagCache) =>
+  localStorage.setItem(`s3-upload-${uploadId}`, JSON.stringify(cache));
+
+const removeCache = (uploadId: string) => localStorage.removeItem(`s3-upload-${uploadId}`);
+
+const cacheChunkEtag = (uploadedChunk: UploadedChunk) => {
+  const cache = _getCache(uploadedChunk.uploadId);
+  cache[uploadedChunk.partNumber] = uploadedChunk.etag;
+  _storeCache(uploadedChunk.uploadId, cache);
+};
+
+const getCachedChunkEtag = (uploadId: string, partNumber: number) => 
+_getCache(uploadId)[partNumber];
+
 export class UploadManager {
   private onProgress: UploadProgressCallback | null = null
   private onComplete: UploadCompleteCallback | null = null
@@ -214,6 +233,7 @@ export class UploadManager {
 
     // Send completed upload event if callback is provided
     this.onUploadComplete && this.onUploadComplete(uploadedFile, upload.file)
+    removeCache(uploadedFile.uploadId);
   }
 
   complete(): void {
@@ -232,7 +252,7 @@ export class UploadManager {
     this.pendingChunkUploads.forEach((u) => u.cancel())
   }
 
-  cancelOne(uploadId: string): void {
+  cancelOne(uploadId: string, isError: boolean = false): void {
     // Remove all the chunks associated with the uploadId of the errored chunk
     // From the completed chunks list
     this.completedChunks = this.completedChunks.filter(
@@ -253,6 +273,9 @@ export class UploadManager {
     // Update the counters
     this.completedChunksCount = this.completedChunks.length
     this.totalChunksCount = this.chunks.length
+    if (!isError) {
+      removeCache(uploadId);
+    }
   }
 
   chunkCompleted(uploadedChunk: UploadedChunk): void {
@@ -281,6 +304,7 @@ export class UploadManager {
       (c) => c.uploadId === uploadedChunk.uploadId,
     )
     const isUploadComplete = uploadCompletedChunks.length === upload.partsCount
+    cacheChunkEtag(uploadedChunk);
     if (isUploadComplete) {
       this.completeOne(upload)
     }
@@ -316,7 +340,7 @@ export class UploadManager {
     }
 
     // Else, we only cancel the errored upload
-    this.cancelOne(erroredChunk.uploadId)
+    this.cancelOne(erroredChunk.uploadId, true)
     // If onProgress callback is provided, send updated progress
     this.onProgress &&
       this.onProgress({
@@ -400,6 +424,14 @@ export class UploadManager {
         },
     chunk: MultipartUploadChunk,
   ): Promise<UploadedChunk> {
+    const alreadyUploadedEtag = getCachedChunkEtag(chunk.uploadId, chunk.partNumber);
+    if (alreadyUploadedEtag) {
+      return {
+        etag: alreadyUploadedEtag,
+        partNumber: chunk.partNumber,
+        uploadId: chunk.uploadId,
+      }
+    }
     const getPartRequest = async () => {
       // If no getPartRequest handler is provided, we throw an error as we cannot
       // handle multipart uploads

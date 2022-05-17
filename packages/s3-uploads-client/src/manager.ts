@@ -96,18 +96,18 @@ export class UploadManager {
 
         // For multipart upload, extract part from file and format a chunk that will
         // be passed to the UploadManager
-        const fileBuffer = await u.file.arrayBuffer()
         const parts = Array(u.partsCount)
           .fill(null)
           .map<UploadChunk>((_, idx) => {
             const start = idx * u.chunkSize
             const end = start + u.chunkSize
-            const filePart = fileBuffer.slice(start, end)
 
             return {
               uploadMode: UploadMode.Multipart,
               uploadType: u.uploadType,
-              filePart,
+              start,
+              end,
+              file: u.file,
               key: u.key,
               uploadId: u.uploadId,
               partNumber: idx + 1,
@@ -423,7 +423,7 @@ export class UploadManager {
     )
     const response = await fetch(request.url, {
       method: 'PUT',
-      body: chunk.filePart,
+      body: chunk.file.slice(chunk.start, chunk.end),
       headers,
       signal: abortController.signal,
     })

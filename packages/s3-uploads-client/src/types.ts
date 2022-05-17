@@ -61,7 +61,9 @@ export interface MultipartUploadChunk {
   uploadType: UploadType
   uploadId: string
   partNumber: number
-  filePart: ArrayBuffer
+  start: number
+  end: number
+  file: File
   key: string
 }
 export interface SingleFileUploadChunk {

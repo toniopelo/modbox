@@ -52,6 +52,7 @@ export const FormLayout: FormRenderer = ({
             />
           )
         }
+
         const item = layoutItem.content
         const overlapLabel = item.layout?.overlapLabel ?? false
         const itemClassName = layoutItem.content.layout?.className ?? ''
@@ -63,7 +64,12 @@ export const FormLayout: FormRenderer = ({
               'FormItem.Custom encountered but no render function was provided',
             )
           }
-          return customRenderer(item)
+
+          return (
+            <div className={`${sizeClassName} ${itemClassName}`}>
+              {customRenderer(item)}
+            </div>
+          )
         }
 
         return (

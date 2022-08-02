@@ -32,6 +32,7 @@ export const FormLayout: FormRenderer = ({
   onChange,
   className = '',
   sizeResolution = MAX_SIZE_RESOLUTION,
+  children: customFormItemRenderer,
 }) => {
   const layout = computeLayout(items)
   const gridSizeClassName = SIZES_CLASSNAMES[sizeResolution].grid
@@ -53,6 +54,16 @@ export const FormLayout: FormRenderer = ({
         const item = layoutItem.content
         const overlapLabel = item.layout?.overlapLabel ?? false
         const itemClassName = layoutItem.content.layout?.className ?? ''
+
+        if (item.type === FormItemType.Custom) {
+          const customRenderer = item.rederer || customFormItemRenderer
+          if (!customRenderer) {
+            throw new Error(
+              'FormItem.Custom encountered but no render function was provided',
+            )
+          }
+          return customRenderer(item)
+        }
 
         return (
           <Fragment key={`item-${idx}`}>
@@ -113,6 +124,7 @@ export const FormLayout: FormRenderer = ({
                 onChange={(option) => onChange(item, option)}
                 rederer={FormLayout}
                 className={`${sizeClassName} ${itemClassName}`}
+                customFormItemRenderer={customFormItemRenderer}
               />
             )}
           </Fragment>

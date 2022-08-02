@@ -172,7 +172,8 @@ export const useSteppedForm = <StepsDef extends StepsDefinition>({
     clearStep: () =>
       updateItems(
         clearItemsFn(stepItems).reduce((acc, i) => {
-          return i.type !== FormItemType.Heading
+          return i.type !== FormItemType.Heading &&
+            i.type !== FormItemType.Custom
             ? (updateResponse(acc, i, i.value) as SteppedFormItem<
                 StepIdentifiers<StepsDef>
               >[])

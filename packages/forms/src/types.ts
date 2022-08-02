@@ -40,6 +40,7 @@ export enum FormItemType {
   Checkbox = 'Checkbox',
   Collection = 'Collection',
   Heading = 'Heading',
+  Custom = 'Custom',
 }
 export type StepsDefinition = readonly (
   | string
@@ -57,8 +58,6 @@ export type StepIdentifiers<
 
 type FormItemBase = {
   id: string
-  contextLabel?: string
-  label: string
   layout?: FormItemLayout
 }
 
@@ -67,6 +66,8 @@ export type FormItem<T extends FormItemType = FormItemType> = FormItemBase &
     | (T extends FormItemType.ShortText
         ? {
             type: FormItemType.ShortText
+            contextLabel?: string
+            label: string
             placeholder?: string
             minLength?: number
             maxLength?: number
@@ -76,6 +77,8 @@ export type FormItem<T extends FormItemType = FormItemType> = FormItemBase &
     | (T extends FormItemType.Select
         ? {
             type: FormItemType.Select
+            contextLabel?: string
+            label: string
             options: SelectOption[]
             value: SelectOption | null
           }
@@ -83,6 +86,8 @@ export type FormItem<T extends FormItemType = FormItemType> = FormItemBase &
     | (T extends FormItemType.DropdownSelect
         ? {
             type: FormItemType.DropdownSelect
+            contextLabel?: string
+            label: string
             options: SelectOption[]
             value: SelectOption
           }
@@ -90,6 +95,8 @@ export type FormItem<T extends FormItemType = FormItemType> = FormItemBase &
     | (T extends FormItemType.Number
         ? {
             type: FormItemType.Number
+            contextLabel?: string
+            label: string
             minValue?: number
             maxValue?: number
             value: number
@@ -98,23 +105,36 @@ export type FormItem<T extends FormItemType = FormItemType> = FormItemBase &
     | (T extends FormItemType.Checkbox
         ? {
             type: FormItemType.Checkbox
+            contextLabel?: string
+            label: string
             value: boolean
           }
         : never)
     | (T extends FormItemType.Heading
         ? {
             type: FormItemType.Heading
+            contextLabel?: string
+            label: string
           }
         : never)
     | (T extends FormItemType.Collection
         ? {
             type: FormItemType.Collection
+            contextLabel?: string
+            label: string
             minItems: number
             maxItems: number
             emptyLabel: string
             addLabel: string
             template: FormItem<CollectionFormItemTypes>[]
             value: FormItem<CollectionFormItemTypes>[][] | null
+          }
+        : never)
+    | (T extends FormItemType.Custom
+        ? {
+            type: FormItemType.Custom
+            rederer?: CustomFormItemRenderer
+            [k: string]: unknown
           }
         : never)
   )
@@ -124,6 +144,7 @@ export type CollectionFormItemTypes =
   | FormItemType.DropdownSelect
   | FormItemType.Number
   | FormItemType.ShortText
+  | FormItemType.Custom
 
 export type SteppedFormItem<
   StepsID extends StepIdentifiers,
@@ -178,9 +199,13 @@ interface FormItemLayout {
  * Rederer
  */
 
+export type CustomFormItemRenderer = (
+  customItem: FormItem<FormItemType.Custom>,
+) => JSX.Element | undefined | null | false
 export type FormRenderer<FTypes extends FormItemType = FormItemType> = (props: {
   items: FormItem<FTypes>[]
   onChange: <T extends FTypes>(item: FormItem<T>, response: Response<T>) => void
   className?: string
   sizeResolution?: FormItemSize
+  children?: CustomFormItemRenderer
 }) => JSX.Element

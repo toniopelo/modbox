@@ -239,3 +239,5 @@ export {
   UseFormReturnBase,
   UseFormReturnWithSteps,
 } from './types'
+
+export { FormLayout } from './components/FormLayout'

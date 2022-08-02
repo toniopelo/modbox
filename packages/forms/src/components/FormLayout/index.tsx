@@ -7,6 +7,7 @@ import FormItemDropdownSelect from '../FormItemDropdownSelect'
 import FormItemNumber from '../FormItemNumber'
 import FormItemSelect from '../FormItemSelect'
 import FormItemShortText from '../FormItemShortText'
+import FormItemGrid from '../FormItemGrid'
 import { FormItem, FormItemType, FormItemSize, FormRenderer } from '../../types'
 import { MAX_SIZE_RESOLUTION } from '../..'
 
@@ -120,6 +121,15 @@ export const FormLayout: FormRenderer = ({
             )}
             {item.type === FormItemType.Collection && (
               <FormItemCollection
+                item={item}
+                onChange={(option) => onChange(item, option)}
+                rederer={FormLayout}
+                className={`${sizeClassName} ${itemClassName}`}
+                customFormItemRenderer={customFormItemRenderer}
+              />
+            )}
+            {item.type === FormItemType.Grid && (
+              <FormItemGrid
                 item={item}
                 onChange={(option) => onChange(item, option)}
                 rederer={FormLayout}

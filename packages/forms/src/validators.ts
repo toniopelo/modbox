@@ -20,6 +20,7 @@ const VALIDATORS: {
   [FormItemType.DropdownSelect]: (i) => !!i.value,
   [FormItemType.Heading]: () => true,
   [FormItemType.Custom]: () => true,
+  [FormItemType.Grid]: (i) => i.value.every(validateItem),
 }
 
 export const validateItem = (item: FormItem) => {

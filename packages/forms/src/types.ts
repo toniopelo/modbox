@@ -41,6 +41,7 @@ export enum FormItemType {
   Collection = 'Collection',
   Heading = 'Heading',
   Custom = 'Custom',
+  Grid = 'Grid',
 }
 export type StepsDefinition = readonly (
   | string
@@ -137,6 +138,12 @@ export type FormItem<T extends FormItemType = FormItemType> = FormItemBase &
             [k: string]: unknown
           }
         : never)
+    | (T extends FormItemType.Grid
+        ? {
+            type: FormItemType.Grid
+            value: FormItem[]
+          }
+        : never)
   )
 
 export type CollectionFormItemTypes =
@@ -168,6 +175,8 @@ export type Response<T extends FormItemType> = T extends FormItemType.ShortText
   ? boolean
   : T extends FormItemType.Collection
   ? FormItem<CollectionFormItemTypes>[][] | null
+  : T extends FormItemType.Grid
+  ? FormItem[]
   : never
 
 export interface SelectOption {

@@ -98,9 +98,10 @@ export type FormItem<T extends FormItemType = FormItemType> = FormItemBase &
             type: FormItemType.Number
             contextLabel?: string
             label: string
+            placeholder?: string
             minValue?: number
             maxValue?: number
-            value: number
+            value?: number
           }
         : never)
     | (T extends FormItemType.Checkbox
@@ -170,7 +171,7 @@ export type Response<T extends FormItemType> = T extends FormItemType.ShortText
   : T extends FormItemType.DropdownSelect
   ? SelectOption
   : T extends FormItemType.Number
-  ? number
+  ? number | undefined
   : T extends FormItemType.Checkbox
   ? boolean
   : T extends FormItemType.Collection

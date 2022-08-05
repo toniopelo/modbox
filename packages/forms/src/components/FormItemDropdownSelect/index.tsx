@@ -1,14 +1,16 @@
 import React from 'react'
-import { FormItem, SelectOption, FormItemType } from '../../types'
+import { FormItem, SelectOption, FormItemType, FormValue } from '../../types'
 
 export default function FormItemDropdownSelect({
   item,
+  value,
   onSelect,
   className = '',
   overlapLabel = false,
 }: {
   item: FormItem<FormItemType.DropdownSelect>
-  onSelect: (option: SelectOption) => void
+  value: FormValue<FormItemType.DropdownSelect>
+  onSelect: (option: FormValue<FormItemType.DropdownSelect>) => void
   className?: string
   overlapLabel?: boolean
 }) {
@@ -39,7 +41,7 @@ export default function FormItemDropdownSelect({
           className={`${
             overlapLabel ? 'mt-3' : 'mt-1'
           } block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md`}
-          value={item.value?.label}
+          value={value?.label}
           onChange={(e) => {
             const selected: SelectOption | undefined = item.options.find(
               (option) => option.label === e.target.value,

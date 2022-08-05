@@ -1,9 +1,10 @@
 import React from 'react'
 import { RadioGroup } from '@headlessui/react'
-import { FormItem, SelectOption, FormItemType } from '../../types'
+import { FormItem, SelectOption, FormItemType, FormValue } from '../../types'
 
 export default function FormItemSelect({
   item,
+  value,
   onSelect,
   buildLabel = (option: SelectOption) => option.label,
   disabled = false,
@@ -12,7 +13,8 @@ export default function FormItemSelect({
   className = '',
 }: {
   item: FormItem<FormItemType.Select>
-  onSelect?: (option: SelectOption) => void
+  value: FormValue<FormItemType.Select>
+  onSelect?: (option: FormValue<FormItemType.Select>) => void
   hideLabel?: boolean
   hideContextLabel?: boolean
   disabled?: boolean
@@ -34,7 +36,7 @@ export default function FormItemSelect({
       )}
       <RadioGroup
         disabled={disabled}
-        value={item.value?.label}
+        value={value?.label}
         onChange={(newLabel: string | undefined) => {
           const selected = item.options.find((o) => o.label === newLabel)
           selected && onSelect && onSelect(selected)
@@ -77,7 +79,7 @@ export default function FormItemSelect({
                     className={`${
                       checked
                         ? 'text-indigo-900'
-                        : item.value !== null
+                        : !!value
                         ? 'text-gray-500'
                         : 'text-gray-900'
                     } block text-sm font-medium ml-3`}

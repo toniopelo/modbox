@@ -5,17 +5,21 @@ import {
   FormItemType,
   FormRenderer,
   CustomFormItemRenderer,
+  FormValue,
 } from '../../types'
+import { getValuesFromItems } from '../../utils'
 
 export default function FormItemCollection({
   item: collectionItem,
+  value,
   onChange,
   rederer: Renderer,
   className = '',
   customFormItemRenderer,
 }: {
   item: FormItem<FormItemType.Collection>
-  onChange: (collection: FormItem<CollectionFormItemTypes>[][]) => void
+  value: FormValue<FormItemType.Collection>
+  onChange: (collection: FormValue<FormItemType.Collection>) => void
   rederer: FormRenderer<CollectionFormItemTypes>
   className?: string
   customFormItemRenderer?: CustomFormItemRenderer
@@ -39,40 +43,30 @@ export default function FormItemCollection({
           {collectionItem.label}
         </label>
         <div className="mt-1">
-          {collectionItem.value &&
-            collectionItem.value.map((itemGroup, idx) => (
+          {value &&
+            value.map((rowValues, idx) => (
               <div
                 key={`item-collection-${collectionItem.id}-groupe-${idx}`}
                 className="flex"
               >
                 <Renderer
-                  items={itemGroup}
+                  items={collectionItem.template}
+                  values={rowValues}
                   className="w-full"
-                  onChange={(subFormItem, response) => {
-                    if (!collectionItem.value) {
+                  onChange={(subFormItem, subValue) => {
+                    // Exit if no row exists, this should not happen
+                    if (!value) {
                       return
                     }
 
-                    const subFormItemIdx = itemGroup.findIndex(
-                      (i) => i.id === subFormItem.id,
-                    )
-                    if (subFormItemIdx === -1) {
-                      return
-                    }
-
-                    const updated = [
-                      ...itemGroup.slice(0, subFormItemIdx),
-                      {
-                        ...itemGroup[subFormItemIdx],
-                        value: response,
-                      },
-                      ...itemGroup.slice(subFormItemIdx + 1),
-                    ] as FormItem<CollectionFormItemTypes>[]
-
+                    // Replace row by updated one
                     onChange([
-                      ...collectionItem.value.slice(0, idx),
-                      updated,
-                      ...collectionItem.value.slice(idx + 1),
+                      ...(value.slice(0, idx) ?? []),
+                      {
+                        ...rowValues,
+                        [subFormItem.id]: subValue,
+                      },
+                      ...(value.slice(idx + 1) ?? []),
                     ])
                   }}
                 >
@@ -82,10 +76,10 @@ export default function FormItemCollection({
                   type="button"
                   className={`self-end inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ml-3 shrink-0`}
                   onClick={() => {
-                    collectionItem.value &&
+                    value &&
                       onChange([
-                        ...collectionItem.value.slice(0, idx),
-                        ...collectionItem.value.slice(idx + 1),
+                        ...value.slice(0, idx),
+                        ...value.slice(idx + 1),
                       ])
                   }}
                 >
@@ -93,21 +87,21 @@ export default function FormItemCollection({
                 </button>
               </div>
             ))}
-          {(!collectionItem.value || collectionItem.value.length === 0) && (
+          {(value?.length ?? 0) === 0 && (
             <div className="mb-4 text-sm text-gray-500">
               {collectionItem.emptyLabel}
             </div>
           )}
-          {(collectionItem.value?.length ?? 0) < collectionItem.maxItems && (
+          {(value?.length ?? 0) < collectionItem.maxItems && (
             <button
               type="button"
               className={`inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${
-                collectionItem.value?.length ? 'mt-4' : ''
+                value?.length ? 'mt-4' : ''
               }`}
               onClick={() => {
                 onChange([
-                  ...(collectionItem.value ?? []),
-                  collectionItem.template.concat(),
+                  ...(value ?? []),
+                  getValuesFromItems(collectionItem.template),
                 ])
               }}
             >

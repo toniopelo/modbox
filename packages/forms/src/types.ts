@@ -5,11 +5,11 @@
 export type UseFormReturnBase = {
   items: FormItem<FormItemType>[]
   isValid: boolean
-  responses: Responses
+  values: FormValues
   clearAll: () => void
-  updateResponse: <FType extends FormItemType>(
+  updateValue: <FType extends FormItemType>(
     item: FormItem<FType>,
-    response: Response<FType>,
+    value: FormValue<FType>,
   ) => void
 }
 
@@ -23,10 +23,19 @@ export enum FormItemType {
   Number = 'Number',
   Checkbox = 'Checkbox',
   Collection = 'Collection',
-  Heading = 'Heading',
   Custom = 'Custom',
   Grid = 'Grid',
 }
+
+export type FormItemWithValue =
+  | FormItemType.ShortText
+  | FormItemType.Select
+  | FormItemType.DropdownSelect
+  | FormItemType.Number
+  | FormItemType.Checkbox
+  | FormItemType.Collection
+
+export type FormItemWithoutValue = FormItemType.Grid | FormItemType.Custom
 
 type FormItemBase = {
   id: string
@@ -43,7 +52,7 @@ export type FormItem<T extends FormItemType = FormItemType> = FormItemBase &
             placeholder?: string
             minLength?: number
             maxLength?: number
-            value: string
+            default?: string
           }
         : never)
     | (T extends FormItemType.Select
@@ -52,7 +61,7 @@ export type FormItem<T extends FormItemType = FormItemType> = FormItemBase &
             contextLabel?: string
             label: string
             options: SelectOption[]
-            value: SelectOption | null
+            default?: SelectOption
           }
         : never)
     | (T extends FormItemType.DropdownSelect
@@ -61,7 +70,7 @@ export type FormItem<T extends FormItemType = FormItemType> = FormItemBase &
             contextLabel?: string
             label: string
             options: SelectOption[]
-            value: SelectOption
+            default?: SelectOption
           }
         : never)
     | (T extends FormItemType.Number
@@ -72,7 +81,7 @@ export type FormItem<T extends FormItemType = FormItemType> = FormItemBase &
             placeholder?: string
             minValue?: number
             maxValue?: number
-            value?: number
+            default?: number
           }
         : never)
     | (T extends FormItemType.Checkbox
@@ -80,14 +89,7 @@ export type FormItem<T extends FormItemType = FormItemType> = FormItemBase &
             type: FormItemType.Checkbox
             contextLabel?: string
             label: string
-            value: boolean
-          }
-        : never)
-    | (T extends FormItemType.Heading
-        ? {
-            type: FormItemType.Heading
-            contextLabel?: string
-            label: string
+            default: boolean
           }
         : never)
     | (T extends FormItemType.Collection
@@ -100,7 +102,7 @@ export type FormItem<T extends FormItemType = FormItemType> = FormItemBase &
             emptyLabel: string
             addLabel: string
             template: FormItem<CollectionFormItemTypes>[]
-            value: FormItem<CollectionFormItemTypes>[][] | null
+            default?: FormValues<CollectionFormItemTypes>[]
           }
         : never)
     | (T extends FormItemType.Custom
@@ -113,7 +115,7 @@ export type FormItem<T extends FormItemType = FormItemType> = FormItemBase &
     | (T extends FormItemType.Grid
         ? {
             type: FormItemType.Grid
-            value: FormItem[]
+            grid: FormItem[]
           }
         : never)
   )
@@ -128,20 +130,18 @@ export type CollectionFormItemTypes =
 /**
  * Values
  */
-export type Response<T extends FormItemType> = T extends FormItemType.ShortText
-  ? string
+export type FormValue<T extends FormItemType> = T extends FormItemType.ShortText
+  ? string | undefined
   : T extends FormItemType.Select
-  ? SelectOption
+  ? SelectOption | undefined
   : T extends FormItemType.DropdownSelect
-  ? SelectOption
+  ? SelectOption | undefined
   : T extends FormItemType.Number
   ? number | undefined
   : T extends FormItemType.Checkbox
   ? boolean
   : T extends FormItemType.Collection
-  ? FormItem<CollectionFormItemTypes>[][] | null
-  : T extends FormItemType.Grid
-  ? FormItem[]
+  ? FormValues<CollectionFormItemTypes>[] | undefined
   : never
 
 export interface SelectOption {
@@ -149,12 +149,8 @@ export interface SelectOption {
   [key: string]: unknown
 }
 
-export type Responses<T extends FormItemType = FormItemType> = {
-  [id: string]: T extends FormItemType.Grid
-    ? never
-    : T extends FormItemType.Collection
-    ? Responses<CollectionFormItemTypes>[] | null
-    : Response<T>
+export type FormValues<T extends FormItemType = FormItemType> = {
+  [id: string]: FormValue<T>
 }
 
 /**
@@ -186,8 +182,15 @@ export type CustomFormItemRenderer = (
 ) => JSX.Element | undefined | null | false
 export type FormRenderer<FTypes extends FormItemType = FormItemType> = (props: {
   items: FormItem<FTypes>[]
-  onChange: <T extends FTypes>(item: FormItem<T>, response: Response<T>) => void
+  values: FormValues<FTypes>
+  onChange: <T extends FTypes>(item: FormItem<T>, value: FormValue<T>) => void
   className?: string
   sizeResolution?: FormItemSize
   children?: CustomFormItemRenderer
 }) => JSX.Element
+
+/**
+ * Misc
+ */
+
+export type ItemIdentifiers = (string | [string, string[]])[]

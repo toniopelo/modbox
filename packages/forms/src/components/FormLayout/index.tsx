@@ -7,7 +7,13 @@ import FormItemDropdownSelect from '../FormItemDropdownSelect'
 import FormItemNumber from '../FormItemNumber'
 import FormItemSelect from '../FormItemSelect'
 import FormItemShortText from '../FormItemShortText'
-import { FormItem, FormItemType, FormItemSize, FormRenderer } from '../../types'
+import {
+  FormItem,
+  FormItemType,
+  FormItemSize,
+  FormRenderer,
+  FormValue,
+} from '../../types'
 import { MAX_SIZE_RESOLUTION } from '../..'
 
 const SIZES_CLASSNAMES: {
@@ -29,6 +35,7 @@ const SIZES_CLASSNAMES: {
 
 export const FormLayout: FormRenderer = ({
   items,
+  values,
   onChange,
   className = '',
   sizeResolution = MAX_SIZE_RESOLUTION,
@@ -76,20 +83,10 @@ export const FormLayout: FormRenderer = ({
 
         return (
           <Fragment key={`item-${idx}`}>
-            {item.type === FormItemType.Heading && (
-              <h2
-                className={`text-2xl underline font-thin underline-offset-8 mb-4 ${
-                  SIZES_CLASSNAMES[
-                    scaledSize(MAX_SIZE_RESOLUTION, sizeResolution)
-                  ].item
-                } ${idx > 0 ? 'mt-8' : ''} ${itemClassName}`}
-              >
-                {item.label}
-              </h2>
-            )}
             {item.type === FormItemType.Select && (
               <FormItemSelect
                 item={item}
+                value={values[item.id] as FormValue<FormItemType.Select>}
                 onSelect={(value) => onChange(item, value)}
                 className={`${sizeClassName} ${itemClassName}`}
               />
@@ -97,6 +94,9 @@ export const FormLayout: FormRenderer = ({
             {item.type === FormItemType.DropdownSelect && (
               <FormItemDropdownSelect
                 item={item}
+                value={
+                  values[item.id] as FormValue<FormItemType.DropdownSelect>
+                }
                 onSelect={(value) => onChange(item, value)}
                 className={`${sizeClassName} ${itemClassName}`}
                 overlapLabel={overlapLabel}
@@ -105,6 +105,7 @@ export const FormLayout: FormRenderer = ({
             {item.type === FormItemType.ShortText && (
               <FormItemShortText
                 item={item}
+                value={values[item.id] as FormValue<FormItemType.ShortText>}
                 onChange={(value) => onChange(item, value)}
                 className={`${sizeClassName} ${itemClassName}`}
                 overlapLabel={overlapLabel}
@@ -113,6 +114,7 @@ export const FormLayout: FormRenderer = ({
             {item.type === FormItemType.Number && (
               <FormItemNumber
                 item={item}
+                value={values[item.id] as FormValue<FormItemType.Number>}
                 onChange={(value) => onChange(item, value)}
                 className={`${sizeClassName} ${itemClassName}`}
                 overlapLabel={overlapLabel}
@@ -121,6 +123,7 @@ export const FormLayout: FormRenderer = ({
             {item.type === FormItemType.Checkbox && (
               <FormItemCheckbox
                 item={item}
+                value={values[item.id] as FormValue<FormItemType.Checkbox>}
                 onChange={(value) =>
                   onChange<FormItemType.Checkbox>(item, value)
                 }
@@ -130,6 +133,7 @@ export const FormLayout: FormRenderer = ({
             {item.type === FormItemType.Collection && (
               <FormItemCollection
                 item={item}
+                value={values[item.id] as FormValue<FormItemType.Collection>}
                 onChange={(value) => onChange(item, value)}
                 rederer={FormLayout}
                 className={`${sizeClassName} ${itemClassName}`}
@@ -138,7 +142,8 @@ export const FormLayout: FormRenderer = ({
             )}
             {item.type === FormItemType.Grid && (
               <FormLayout
-                items={item.value}
+                items={item.grid}
+                values={values}
                 onChange={onChange}
                 className={`${sizeClassName} ${itemClassName}`}
               >

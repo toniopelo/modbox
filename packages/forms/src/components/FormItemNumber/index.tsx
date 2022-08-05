@@ -1,14 +1,16 @@
 import React from 'react'
-import { FormItem, FormItemType } from '../../types'
+import { FormItem, FormItemType, FormValue } from '../../types'
 
 export default function FormItemNumber({
   item,
+  value,
   onChange,
   className = '',
   overlapLabel = false,
 }: {
-  item: Extract<FormItem, { type: FormItemType.Number }>
-  onChange: (number: number) => void
+  item: FormItem<FormItemType.Number>
+  value: FormValue<FormItemType.Number>
+  onChange: (number: FormValue<FormItemType.Number>) => void
   className?: string
   overlapLabel?: boolean
 }) {
@@ -39,7 +41,7 @@ export default function FormItemNumber({
             id={item.id}
             className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
             placeholder={item.placeholder}
-            value={item.value}
+            value={value}
             onChange={(e) => onChange(e.target.valueAsNumber)}
             min={item.minValue}
             max={item.maxValue}

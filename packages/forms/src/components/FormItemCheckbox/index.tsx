@@ -1,13 +1,15 @@
 import React from 'react'
-import { FormItem, FormItemType, Response } from '../../types'
+import { FormItem, FormItemType, FormValue } from '../../types'
 
 export default function FormItemCheckbox({
   item,
+  value,
   onChange,
   className = '',
 }: {
   item: FormItem<FormItemType.Checkbox>
-  onChange: (checked: Response<FormItemType.Checkbox>) => void
+  value: FormValue<FormItemType.Checkbox>
+  onChange: (checked: FormValue<FormItemType.Checkbox>) => void
   className?: string
 }) {
   return (
@@ -25,7 +27,7 @@ export default function FormItemCheckbox({
             id={item.id}
             name={item.id}
             type="checkbox"
-            checked={item.value}
+            checked={value}
             className="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
             onChange={(e) => onChange(e.target.checked)}
           />

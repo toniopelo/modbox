@@ -3,84 +3,22 @@ import { useState } from 'react'
 import {
   FormItem,
   FormItemType,
-  Response,
-  Responses,
+  FormValue,
+  FormValues,
+  ItemIdentifiers,
   UseFormReturnBase,
 } from './types'
+import { getIdsFromItems, getValuesFromItems } from './utils'
 import { validateItems } from './validators'
 
 export const MAX_SIZE_RESOLUTION = 12
 
-const updateResponseInSet = <FTypes extends FormItemType>(
-  responseMap: Responses<FTypes>,
+const updateValueInSet = <FTypes extends FormItemType>(
+  valueMap: FormValues<FTypes>,
   itemId: string,
-  response: Response<FTypes>,
-): Responses<FTypes> => {
-  return Object.assign({}, responseMap, { [itemId]: response })
-}
-
-const itemHasContent = (
-  item: FormItem,
-): item is Extract<FormItem, { value: unknown }> => {
-  return item.type !== FormItemType.Heading && item.type !== FormItemType.Custom
-}
-const isCollectionItem = (
-  item: FormItem,
-): item is Extract<FormItem, { type: FormItemType.Collection }> => {
-  return item.type === FormItemType.Collection
-}
-const isGridItem = (
-  item: FormItem,
-): item is Extract<FormItem, { type: FormItemType.Grid }> => {
-  return item.type === FormItemType.Grid
-}
-
-const getResponses = (items: FormItem[]): Responses => {
-  return items.reduce<Responses>((acc, item): Responses => {
-    if (!itemHasContent(item)) {
-      return acc
-    }
-
-    if (isGridItem(item)) {
-      return {
-        ...acc,
-        ...getResponses(item.value),
-      }
-    }
-
-    const responsesToAdd: Responses = {
-      [item.id]: isCollectionItem(item)
-        ? item.value && item.value.map((v) => getResponses(v))
-        : item.value,
-    }
-
-    return {
-      ...acc,
-      ...responsesToAdd,
-    }
-  }, {})
-}
-
-type ItemIdentifiers = (string | [string, string[]])[]
-const getIdsFromItems = (items: FormItem[]): ItemIdentifiers => {
-  return items.reduce<ItemIdentifiers>((acc, item) => {
-    if (!itemHasContent(item)) {
-      return acc
-    }
-
-    if (isGridItem(item)) {
-      return [...acc, ...item.value.map((v) => v.id)]
-    }
-
-    if (isCollectionItem(item)) {
-      return [
-        ...acc,
-        item.value ? [item.id, item.template.map((t) => t.id)] : item.id,
-      ]
-    }
-
-    return [...acc, item.id]
-  }, [])
+  value: FormValue<FTypes>,
+): FormValues<FTypes> => {
+  return Object.assign({}, valueMap, { [itemId]: value })
 }
 
 const getItemsToRecompute = (
@@ -108,34 +46,34 @@ const getItemsToRecompute = (
   }, [])
 }
 
-const useSyncedResponsesWithItems = (
+const useSyncedValuesWithItems = (
   items: FormItem[],
-): [Responses, (responses: Responses) => void] => {
+): [FormValues, (values: FormValues) => void] => {
   const nextItemIds = getIdsFromItems(items)
   const [itemIds, setItemIds] = useState(nextItemIds)
-  const [responses, setResponses] = useState(() => getResponses(items))
+  const [values, setValues] = useState(() => getValuesFromItems(items))
   const idsToRecompute = getItemsToRecompute(itemIds, nextItemIds)
 
   if (idsToRecompute.length) {
-    const recomputedResponses = getResponses(items)
-    const responseToUpdate = idsToRecompute.reduce<Responses>((acc, id) => {
+    const recomputedValues = getValuesFromItems(items)
+    const valueToUpdate = idsToRecompute.reduce<FormValues>((acc, id) => {
       const identifier = typeof id === 'string' ? id : id[0]
       return Object.assign(acc, {
-        [identifier]: recomputedResponses[identifier],
+        [identifier]: recomputedValues[identifier],
       })
     }, {})
 
-    const updatedResponses = {
-      ...responses,
-      ...responseToUpdate,
+    const updatedValues = {
+      ...values,
+      ...valueToUpdate,
     }
-    setResponses(updatedResponses)
+    setValues(updatedValues)
     setItemIds(nextItemIds)
 
-    return [updatedResponses, setResponses]
+    return [updatedValues, setValues]
   }
 
-  return [responses, setResponses]
+  return [values, setValues]
 }
 
 export const useForm = ({
@@ -143,26 +81,26 @@ export const useForm = ({
   onChange,
 }: {
   items: FormItem<FormItemType>[]
-  onChange: (responses: Responses<FormItemType>) => void
+  onChange: (values: FormValues<FormItemType>) => void
 }): UseFormReturnBase => {
-  const [responses, setResponses] = useSyncedResponsesWithItems(items)
+  const [values, setValues] = useSyncedValuesWithItems(items)
 
-  const isValid = validateItems(items, responses)
-  const updateResponses = (responses: Responses<FormItemType>) => {
-    setResponses(responses)
-    onChange && onChange(responses)
+  const isValid = validateItems(items, values)
+  const updateValues = (values: FormValues<FormItemType>) => {
+    setValues(values)
+    onChange && onChange(values)
   }
 
   return {
     items,
-    responses,
+    values,
     isValid,
-    clearAll: () => updateResponses(getResponses(items)),
-    updateResponse: <FType extends FormItemType>(
+    clearAll: () => updateValues(getValuesFromItems(items)),
+    updateValue: <FType extends FormItemType>(
       item: FormItem<FType>,
-      response: Response<FType>,
+      value: FormValue<FType>,
     ) => {
-      updateResponses(updateResponseInSet(responses, item.id, response))
+      updateValues(updateValueInSet(values, item.id, value))
     },
   }
 }
@@ -174,7 +112,8 @@ export {
   CustomFormItemRenderer,
   FormItemSize,
   FormRenderer,
-  Response,
+  FormValue,
+  FormValues,
   SelectOption,
   UseFormReturnBase,
 } from './types'

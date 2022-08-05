@@ -1,14 +1,16 @@
 import React from 'react'
-import { FormItem, FormItemType } from '../../types'
+import { FormItem, FormItemType, FormValue } from '../../types'
 
 export default function FormItemShortText({
   item,
+  value,
   onChange,
   className = '',
   overlapLabel = false,
 }: {
-  item: Extract<FormItem, { type: FormItemType.ShortText }>
-  onChange: (text: string) => void
+  item: FormItem<FormItemType.ShortText>
+  value: FormValue<FormItemType.ShortText>
+  onChange: (text: FormValue<FormItemType.ShortText>) => void
   className?: string
   overlapLabel?: boolean
 }) {
@@ -41,7 +43,7 @@ export default function FormItemShortText({
             maxLength={item.maxLength}
             className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
             placeholder={item.placeholder}
-            value={item.value ?? ''}
+            value={value}
             onChange={(e) => onChange(e.target.value)}
           />
         </div>

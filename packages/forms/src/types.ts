@@ -5,29 +5,13 @@
 export type UseFormReturnBase = {
   items: FormItem<FormItemType>[]
   isValid: boolean
+  responses: Responses
   clearAll: () => void
   updateResponse: <FType extends FormItemType>(
     item: FormItem<FType>,
     response: Response<FType>,
   ) => void
 }
-export type UseFormReturnWithSteps<StepsDef extends StepsDefinition> =
-  UseFormReturnBase & {
-    stepItems: SteppedFormItem<StepIdentifiers<StepsDef>, FormItemType>[]
-    items: SteppedFormItem<StepIdentifiers<StepsDef>, FormItemType>[]
-    currentStep: StepIdentifiers<StepsDef>
-    currentStepIdx: number
-    isFirstStep: boolean
-    isLastStep: boolean
-    completedSteps: StepIdentifiers<StepsDef>[]
-    inProgressStep: StepIdentifiers<StepsDef>
-    setCurrentStep: (step: StepIdentifiers<StepsDef>) => void
-    next: () => void
-    prev: () => void
-    isStepValid: boolean
-    clearStep: () => void
-    stepClassName: string
-  }
 
 /**
  * FormItem base types
@@ -43,19 +27,6 @@ export enum FormItemType {
   Custom = 'Custom',
   Grid = 'Grid',
 }
-export type StepsDefinition = readonly (
-  | string
-  | number
-  | { id: string | number; className?: string; [key: string]: unknown }
-)[]
-
-type StepIdentifierExtractor<T extends StepsDefinition[number]> =
-  T extends Record<string, unknown> ? T['id'] : T
-export type StepIdentifiers<
-  StepsDef extends StepsDefinition = StepsDefinition,
-> = {
-  [key in keyof StepsDef]: StepIdentifierExtractor<StepsDef[key]>
-}[number]
 
 type FormItemBase = {
   id: string
@@ -154,13 +125,6 @@ export type CollectionFormItemTypes =
   | FormItemType.ShortText
   | FormItemType.Custom
 
-export type SteppedFormItem<
-  StepsID extends StepIdentifiers,
-  T extends FormItemType = FormItemType,
-> = FormItem<T> & {
-  step: StepsID
-}
-
 /**
  * Values
  */
@@ -183,6 +147,14 @@ export type Response<T extends FormItemType> = T extends FormItemType.ShortText
 export interface SelectOption {
   label: string
   [key: string]: unknown
+}
+
+export type Responses<T extends FormItemType = FormItemType> = {
+  [id: string]: T extends FormItemType.Grid
+    ? never
+    : T extends FormItemType.Collection
+    ? Responses<CollectionFormItemTypes>[] | null
+    : Response<T>
 }
 
 /**

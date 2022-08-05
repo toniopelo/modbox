@@ -1,29 +1,55 @@
-import { FormItemType, FormItem } from './types'
+import { FormItemType, FormItem, Responses } from './types'
+
+type FormItemTypeWithoutGrid = Exclude<FormItemType, FormItemType.Grid>
 
 const VALIDATORS: {
-  [type in FormItemType]: (item: FormItem<type>) => boolean
+  [type in FormItemTypeWithoutGrid]: (
+    item: FormItem<type>,
+    response: Responses<type>[string],
+  ) => boolean
 } = {
-  [FormItemType.ShortText]: (i) =>
-    !!i.value &&
-    i.value.length >= (i.minLength ?? 1) &&
-    i.value.length <= (i.maxLength ?? Infinity),
-  [FormItemType.Number]: (i) =>
-    i.value >= (i.minValue ?? -Infinity) && i.value <= (i.maxValue ?? Infinity),
-  [FormItemType.Collection]: (i) =>
-    (i.minItems === 0 && i.value === null) ||
-    (i.value !== null &&
-      i.value.length >= i.minItems &&
-      i.value.length <= i.maxItems &&
-      i.value.every((c) => c.every((iNested) => validateItem(iNested)))),
+  [FormItemType.ShortText]: (i, r) =>
+    !!r &&
+    r.length >= (i.minLength ?? 1) &&
+    r.length <= (i.maxLength ?? Infinity),
+  [FormItemType.Number]: (i, r) =>
+    !!r && r >= (i.minValue ?? -Infinity) && r <= (i.maxValue ?? Infinity),
+  [FormItemType.Collection]: (i, r) =>
+    (i.minItems === 0 && r === null) ||
+    (r !== null &&
+      r.length >= i.minItems &&
+      r.length <= i.maxItems &&
+      i.template.every((iTemplate) => {
+        r.every((rRow) => validateItem(iTemplate, rRow[iTemplate.id]))
+      })),
   [FormItemType.Checkbox]: () => true,
-  [FormItemType.Select]: (i) => !!i.value,
-  [FormItemType.DropdownSelect]: (i) => !!i.value,
+  [FormItemType.Select]: (i, r) => !!r,
+  [FormItemType.DropdownSelect]: (i, r) => !!r,
   [FormItemType.Heading]: () => true,
   [FormItemType.Custom]: () => true,
-  [FormItemType.Grid]: (i) => i.value.every(validateItem),
 }
 
-export const validateItem = (item: FormItem) => {
-  const validate = VALIDATORS[item.type] as (item: FormItem) => boolean
-  return validate(item)
+export const validateItem = <T extends FormItemTypeWithoutGrid>(
+  item: FormItem<T>,
+  response: Responses<T>[string],
+) => {
+  const validate = VALIDATORS[item.type as FormItemTypeWithoutGrid] as (
+    item: FormItem<T>,
+    response: Responses[string],
+  ) => boolean
+  return validate(item, response)
+}
+
+export const validateItems = (
+  items: FormItem[],
+  responses: Responses,
+): boolean => {
+  return items.every((i) => {
+    if (i.type === FormItemType.Grid) {
+      return validateItems(i.value, responses)
+    }
+
+    const response = responses[i.id]
+    return validateItem(i, response)
+  })
 }

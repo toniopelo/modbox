@@ -7,7 +7,6 @@ import FormItemDropdownSelect from '../FormItemDropdownSelect'
 import FormItemNumber from '../FormItemNumber'
 import FormItemSelect from '../FormItemSelect'
 import FormItemShortText from '../FormItemShortText'
-import FormItemGrid from '../FormItemGrid'
 import { FormItem, FormItemType, FormItemSize, FormRenderer } from '../../types'
 import { MAX_SIZE_RESOLUTION } from '../..'
 
@@ -66,7 +65,10 @@ export const FormLayout: FormRenderer = ({
           }
 
           return (
-            <div className={`${sizeClassName} ${itemClassName}`}>
+            <div
+              key={`custom-item-${idx}`}
+              className={`${sizeClassName} ${itemClassName}`}
+            >
               {customRenderer(item)}
             </div>
           )
@@ -88,14 +90,14 @@ export const FormLayout: FormRenderer = ({
             {item.type === FormItemType.Select && (
               <FormItemSelect
                 item={item}
-                onSelect={(option) => onChange(item, option)}
+                onSelect={(value) => onChange(item, value)}
                 className={`${sizeClassName} ${itemClassName}`}
               />
             )}
             {item.type === FormItemType.DropdownSelect && (
               <FormItemDropdownSelect
                 item={item}
-                onSelect={(option) => onChange(item, option)}
+                onSelect={(value) => onChange(item, value)}
                 className={`${sizeClassName} ${itemClassName}`}
                 overlapLabel={overlapLabel}
               />
@@ -103,7 +105,7 @@ export const FormLayout: FormRenderer = ({
             {item.type === FormItemType.ShortText && (
               <FormItemShortText
                 item={item}
-                onChange={(option) => onChange(item, option)}
+                onChange={(value) => onChange(item, value)}
                 className={`${sizeClassName} ${itemClassName}`}
                 overlapLabel={overlapLabel}
               />
@@ -111,7 +113,7 @@ export const FormLayout: FormRenderer = ({
             {item.type === FormItemType.Number && (
               <FormItemNumber
                 item={item}
-                onChange={(option) => onChange(item, option)}
+                onChange={(value) => onChange(item, value)}
                 className={`${sizeClassName} ${itemClassName}`}
                 overlapLabel={overlapLabel}
               />
@@ -119,8 +121,8 @@ export const FormLayout: FormRenderer = ({
             {item.type === FormItemType.Checkbox && (
               <FormItemCheckbox
                 item={item}
-                onChange={(option) =>
-                  onChange<FormItemType.Checkbox>(item, option)
+                onChange={(value) =>
+                  onChange<FormItemType.Checkbox>(item, value)
                 }
                 className={`${sizeClassName} ${itemClassName}`}
               />
@@ -128,20 +130,20 @@ export const FormLayout: FormRenderer = ({
             {item.type === FormItemType.Collection && (
               <FormItemCollection
                 item={item}
-                onChange={(option) => onChange(item, option)}
+                onChange={(value) => onChange(item, value)}
                 rederer={FormLayout}
                 className={`${sizeClassName} ${itemClassName}`}
                 customFormItemRenderer={customFormItemRenderer}
               />
             )}
             {item.type === FormItemType.Grid && (
-              <FormItemGrid
-                item={item}
-                onChange={(option) => onChange(item, option)}
-                rederer={FormLayout}
+              <FormLayout
+                items={item.value}
+                onChange={onChange}
                 className={`${sizeClassName} ${itemClassName}`}
-                customFormItemRenderer={customFormItemRenderer}
-              />
+              >
+                {customFormItemRenderer}
+              </FormLayout>
             )}
           </Fragment>
         )

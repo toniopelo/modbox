@@ -43,7 +43,7 @@ export default function FormItemShortText({
             maxLength={item.maxLength}
             className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
             placeholder={item.placeholder}
-            value={value}
+            value={value ?? ''}
             onChange={(e) => onChange(e.target.value)}
           />
         </div>

@@ -176,19 +176,17 @@ const computeLayout = <FTypes extends FormItemType>(
   }>(
     ({ layout, spaceLeftOnRow }, item) => {
       const {
-        alone = false,
+        lastOnRow = false,
         maxSize: maxSizeOption = MAX_SIZE_RESOLUTION,
         minSize = 1,
-        newLine = false,
+        firstOnRow = false,
       } = item.layout ?? {}
 
-      if (newLine) {
+      if (firstOnRow) {
         return {
           layout: [
             ...layout,
-            ...(newLine &&
-            spaceLeftOnRow > 0 &&
-            spaceLeftOnRow < MAX_SIZE_RESOLUTION
+            ...(spaceLeftOnRow > 0 && spaceLeftOnRow < MAX_SIZE_RESOLUTION
               ? [{ size: spaceLeftOnRow, type: 'empty' as const }]
               : []),
             {
@@ -196,7 +194,7 @@ const computeLayout = <FTypes extends FormItemType>(
               type: 'content' as const,
               content: item,
             },
-            ...(alone && maxSizeOption < MAX_SIZE_RESOLUTION
+            ...(lastOnRow && maxSizeOption < MAX_SIZE_RESOLUTION
               ? [
                   {
                     size: (MAX_SIZE_RESOLUTION - maxSizeOption) as FormItemSize,
@@ -205,7 +203,7 @@ const computeLayout = <FTypes extends FormItemType>(
                 ]
               : []),
           ],
-          spaceLeftOnRow: (alone
+          spaceLeftOnRow: (lastOnRow
             ? MAX_SIZE_RESOLUTION
             : MAX_SIZE_RESOLUTION - maxSizeOption ||
               MAX_SIZE_RESOLUTION) as FormItemSize,
@@ -229,11 +227,11 @@ const computeLayout = <FTypes extends FormItemType>(
         layout: [
           ...layout,
           { size: realSize, type: 'content' as const, content: item },
-          ...(alone && spaceLeftOnRowAfter
+          ...(lastOnRow && spaceLeftOnRowAfter
             ? [{ size: spaceLeftOnRowAfter, type: 'empty' as const }]
             : []),
         ],
-        spaceLeftOnRow: alone ? MAX_SIZE_RESOLUTION : spaceLeftOnRowAfter,
+        spaceLeftOnRow: lastOnRow ? MAX_SIZE_RESOLUTION : spaceLeftOnRowAfter,
       }
     },
     {

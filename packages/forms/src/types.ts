@@ -160,17 +160,10 @@ export type FormItemSize = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12
 interface FormItemLayout {
   minSize?: FormItemSize
   maxSize?: FormItemSize
-  newLine?: boolean
-  alone?: boolean
+  firstOnRow?: boolean
+  lastOnRow?: boolean
   overlapLabel?: boolean
   className?: string
-  grouping?: {
-    top?: boolean
-    bottom?: boolean
-    left?: boolean
-    right?: boolean
-    priority?: ('top' | 'bottom' | 'left' | 'right')[]
-  }
 }
 
 /**

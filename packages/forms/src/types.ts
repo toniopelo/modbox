@@ -52,6 +52,7 @@ export type FormItem<T extends FormItemType = FormItemType> = FormItemBase &
             placeholder?: string
             minLength?: number
             maxLength?: number
+            optional?: boolean
             default?: string
           }
         : never)
@@ -61,6 +62,7 @@ export type FormItem<T extends FormItemType = FormItemType> = FormItemBase &
             contextLabel?: string
             label: string
             options: SelectOption[]
+            optional?: boolean
             default?: SelectOption
           }
         : never)
@@ -81,6 +83,7 @@ export type FormItem<T extends FormItemType = FormItemType> = FormItemBase &
             placeholder?: string
             minValue?: number
             maxValue?: number
+            optional?: boolean
             default?: number
           }
         : never)

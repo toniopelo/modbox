@@ -8,11 +8,16 @@ const VALIDATORS: {
   ) => boolean
 } = {
   [FormItemType.ShortText]: (i, v) =>
-    !!v &&
-    v.length >= (i.minLength ?? 1) &&
-    v.length <= (i.maxLength ?? Infinity),
+    (!v && !!i.optional) ||
+    (!!v &&
+      v.length >= (i.minLength ?? 1) &&
+      v.length <= (i.maxLength ?? Infinity)),
   [FormItemType.Number]: (i, v) =>
-    !!v && v >= (i.minValue ?? -Infinity) && v <= (i.maxValue ?? Infinity),
+    (v === undefined && !!i.optional) ||
+    (v !== undefined &&
+      !isNaN(v) &&
+      v >= (i.minValue ?? -Infinity) &&
+      v <= (i.maxValue ?? Infinity)),
   [FormItemType.Collection]: (i, v) =>
     (i.minItems === 0 && (!v || v.length === 0)) ||
     (!!v &&
@@ -26,7 +31,7 @@ const VALIDATORS: {
         )
       })),
   [FormItemType.Checkbox]: () => true,
-  [FormItemType.Select]: (i, v) => !!v,
+  [FormItemType.Select]: (i, v) => (v === undefined && !!i.optional) || !!v,
   [FormItemType.DropdownSelect]: (i, v) => !!v,
 }
 

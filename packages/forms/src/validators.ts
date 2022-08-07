@@ -18,18 +18,21 @@ const VALIDATORS: {
       !isNaN(v) &&
       v >= (i.minValue ?? -Infinity) &&
       v <= (i.maxValue ?? Infinity)),
-  [FormItemType.Collection]: (i, v) =>
-    (i.minItems === 0 && (!v || v.length === 0)) ||
-    (!!v &&
-      v.length >= i.minItems &&
-      v.length <= i.maxItems &&
-      i.template.every((iTemplate) => {
+  [FormItemType.Collection]: (i, v) => {
+    return (
+      (i.minItems === 0 && (!v || v.length === 0)) ||
+      (!!v &&
+        v.length >= i.minItems &&
+        v.length <= i.maxItems &&
         v.every((vRow) =>
-          itemHasContent(iTemplate)
-            ? validateItem(iTemplate, vRow[iTemplate.id])
-            : true,
-        )
-      })),
+          i.template.every((iTemplate) =>
+            itemHasContent(iTemplate)
+              ? validateItem(iTemplate, vRow[iTemplate.id])
+              : true,
+          ),
+        ))
+    )
+  },
   [FormItemType.Checkbox]: () => true,
   [FormItemType.Select]: (i, v) => (v === undefined && !!i.optional) || !!v,
   [FormItemType.DropdownSelect]: (i, v) => !!v,

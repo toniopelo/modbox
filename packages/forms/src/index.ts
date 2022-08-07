@@ -46,13 +46,26 @@ const getItemsToRecompute = (
   }, [])
 }
 
-const useSyncedValuesWithItems = (
-  items: FormItem[],
-): [FormValues, (values: FormValues) => void] => {
+const useSyncedValuesWithItems = ({
+  onChange,
+  items,
+  initialValues,
+}: {
+  items: FormItem<FormItemType>[]
+  initialValues?: FormValues<FormItemType>
+  onChange: (values: FormValues<FormItemType>) => void
+}): [FormValues, (values: FormValues) => void] => {
   const nextItemIds = getIdsFromItems(items)
   const [itemIds, setItemIds] = useState(nextItemIds)
-  const [values, setValues] = useState(() => getValuesFromItems(items))
+  const [values, setInternalValues] = useState(
+    initialValues ?? (() => getValuesFromItems(items)),
+  )
   const idsToRecompute = getItemsToRecompute(itemIds, nextItemIds)
+
+  const setValues = (newValues: FormValues<FormItemType>) => {
+    setInternalValues(newValues)
+    onChange(newValues)
+  }
 
   if (idsToRecompute.length) {
     const recomputedValues = getValuesFromItems(items)
@@ -78,29 +91,31 @@ const useSyncedValuesWithItems = (
 
 export const useForm = ({
   items,
+  initialValues,
   onChange,
 }: {
   items: FormItem<FormItemType>[]
+  initialValues?: FormValues<FormItemType>
   onChange: (values: FormValues<FormItemType>) => void
 }): UseFormReturnBase => {
-  const [values, setValues] = useSyncedValuesWithItems(items)
-
+  const [values, setValues] = useSyncedValuesWithItems({
+    items,
+    initialValues,
+    onChange,
+  })
   const isValid = validateItems(items, values)
-  const updateValues = (values: FormValues<FormItemType>) => {
-    setValues(values)
-    onChange && onChange(values)
-  }
 
   return {
     items,
     values,
     isValid,
-    clearAll: () => updateValues(getValuesFromItems(items)),
-    updateValue: <FType extends FormItemType>(
+    clearAll: () => setValues(getValuesFromItems(items)),
+    updateValues: setValues,
+    updateValueForItem: <FType extends FormItemType>(
       item: FormItem<FType>,
       value: FormValue<FType>,
     ) => {
-      updateValues(updateValueInSet(values, item.id, value))
+      setValues(updateValueInSet(values, item.id, value))
     },
   }
 }

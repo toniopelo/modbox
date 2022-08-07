@@ -49,22 +49,20 @@ const getItemsToRecompute = (
 const useSyncedValuesWithItems = ({
   onChange,
   items,
-  initialValues,
+  values,
 }: {
   items: FormItem<FormItemType>[]
-  initialValues?: FormValues<FormItemType>
+  values?: FormValues<FormItemType>
   onChange: (values: FormValues<FormItemType>) => void
-}): [FormValues, (values: FormValues) => void] => {
+}) => {
   const nextItemIds = getIdsFromItems(items)
   const [itemIds, setItemIds] = useState(nextItemIds)
-  const [values, setInternalValues] = useState(
-    initialValues ?? (() => getValuesFromItems(items)),
-  )
   const idsToRecompute = getItemsToRecompute(itemIds, nextItemIds)
 
-  const setValues = (newValues: FormValues<FormItemType>) => {
-    setInternalValues(newValues)
-    onChange(newValues)
+  if (!values) {
+    const computedValues = getValuesFromItems(items)
+    onChange(getValuesFromItems(items))
+    return computedValues
   }
 
   if (idsToRecompute.length) {
@@ -80,43 +78,49 @@ const useSyncedValuesWithItems = ({
       ...values,
       ...valueToUpdate,
     }
-    setValues(updatedValues)
+    onChange(updatedValues)
     setItemIds(nextItemIds)
 
-    return [updatedValues, setValues]
+    return updatedValues
   }
 
-  return [values, setValues]
+  return values
 }
 
 export const useForm = ({
   items,
-  initialValues,
+  values: externalValues,
   onChange,
 }: {
   items: FormItem<FormItemType>[]
-  initialValues?: FormValues<FormItemType>
+  values?: FormValues<FormItemType>
   onChange: (values: FormValues<FormItemType>) => void
 }): UseFormReturnBase => {
-  const [values, setValues] = useSyncedValuesWithItems({
+  const values = useSyncedValuesWithItems({
     items,
-    initialValues,
+    values: externalValues,
     onChange,
   })
   const isValid = validateItems(items, values)
+
+  const updateValueForItem = <FType extends FormItemType>(
+    item: FormItem<FType>,
+    value: FormValue<FType>,
+  ) => {
+    onChange(updateValueInSet(values, item.id, value))
+  }
 
   return {
     items,
     values,
     isValid,
-    clearAll: () => setValues(getValuesFromItems(items)),
-    updateValues: setValues,
-    updateValueForItem: <FType extends FormItemType>(
-      item: FormItem<FType>,
-      value: FormValue<FType>,
-    ) => {
-      setValues(updateValueInSet(values, item.id, value))
+    clearValues: () => onChange(getValuesFromItems(items)),
+    clearValueForItem: <FType extends FormItemType>(item: FormItem<FType>) => {
+      onChange(
+        updateValueInSet(values, item.id, getValuesFromItems([item])[item.id]),
+      )
     },
+    updateValueForItem,
   }
 }
 
@@ -132,5 +136,5 @@ export {
   SelectOption,
   UseFormReturnBase,
 } from './types'
-
-export { FormLayout } from './components/FormLayout'
+export { getValuesFromItems } from './utils'
+export { FormLayout as Form } from './components/FormLayout'

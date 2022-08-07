@@ -3,11 +3,11 @@
  */
 
 export type UseFormReturnBase = {
-  items: FormItem<FormItemType>[]
-  isValid: boolean
+  items: FormItem[]
   values: FormValues
-  clearAll: () => void
-  updateValues: <FType extends FormItemType>(value: FormValues<FType>) => void
+  isValid: boolean
+  clearValues: () => void
+  clearValueForItem: <FType extends FormItemType>(item: FormItem<FType>) => void
   updateValueForItem: <FType extends FormItemType>(
     item: FormItem<FType>,
     value: FormValue<FType>,

@@ -46,7 +46,7 @@ export default function FormItemCollection({
           {value &&
             value.map((rowValues, idx) => (
               <div
-                key={`item-collection-${collectionItem.id}-group-${idx}`}
+                key={`item-collection-${collectionItem.id}-groupe-${idx}`}
                 className="flex"
               >
                 <Renderer

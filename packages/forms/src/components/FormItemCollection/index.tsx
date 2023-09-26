@@ -46,13 +46,13 @@ export default function FormItemCollection({
           {value &&
             value.map((rowValues, idx) => (
               <div
-                key={`item-collection-${collectionItem.id}-groupe-${idx}`}
+                key={`item-collection-${collectionItem.id}-group-${idx}`}
                 className="flex"
               >
                 <Renderer
                   items={collectionItem.template}
                   values={rowValues}
-                  className="w-full"
+                  className={`w-full ${collectionItem.rowGridClassName ?? ''}`}
                   onChange={(subFormItem, subValue) => {
                     // Exit if no row exists, this should not happen
                     if (!value) {

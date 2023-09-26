@@ -107,6 +107,7 @@ export type FormItem<T extends FormItemType = FormItemType> = FormItemBase &
             addLabel: string
             template: FormItem<CollectionFormItemTypes>[]
             default?: FormValues<CollectionFormItemTypes>[]
+            rowGridClassName?: string
           }
         : never)
     | (T extends FormItemType.Custom

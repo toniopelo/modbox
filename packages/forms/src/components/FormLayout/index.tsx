@@ -20,18 +20,18 @@ import { MAX_SIZE_RESOLUTION } from '../..'
 const GRID_SIZES_CLASSNAMES: {
   [k in FormItemSizeNumber]: string
 } = {
-  [1]: 'grid-cols-1 items-end',
-  [2]: 'grid-cols-2 items-end',
-  [3]: 'grid-cols-3 items-end',
-  [4]: 'grid-cols-4 items-end',
-  [5]: 'grid-cols-5 items-end',
-  [6]: 'grid-cols-6 items-end',
-  [7]: 'grid-cols-7 items-end',
-  [8]: 'grid-cols-8 items-end',
-  [9]: 'grid-cols-9 items-end',
-  [10]: 'grid-cols-10 items-end',
-  [11]: 'grid-cols-11 items-end',
-  [12]: 'grid-cols-12 items-end',
+  [1]: 'grid-cols-1',
+  [2]: 'grid-cols-2',
+  [3]: 'grid-cols-3',
+  [4]: 'grid-cols-4',
+  [5]: 'grid-cols-5',
+  [6]: 'grid-cols-6',
+  [7]: 'grid-cols-7',
+  [8]: 'grid-cols-8',
+  [9]: 'grid-cols-9',
+  [10]: 'grid-cols-10',
+  [11]: 'grid-cols-11',
+  [12]: 'grid-cols-12',
 }
 
 const ITEMS_SIZES_CLASSNAMES: {

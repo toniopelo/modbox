@@ -160,7 +160,7 @@ export type FormValues<T extends FormItemType = FormItemType> = {
 /**
  * Layout
  */
-export type FormItemSizeBreakpoint = 'sm' | 'md' | 'lg' | 'xl'
+export type FormItemSizeBreakpoint = 'default' | 'sm' | 'md' | 'lg' | 'xl'
 export type FormItemSizeNumber =
   | 1
   | 2

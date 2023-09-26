@@ -160,7 +160,7 @@ export type FormValues<T extends FormItemType = FormItemType> = {
 /**
  * Layout
  */
-export type FormItemSizeBreakpoints = 'sm' | 'md' | 'lg' | 'xl'
+export type FormItemSizeBreakpoint = 'sm' | 'md' | 'lg' | 'xl'
 export type FormItemSizeNumber =
   | 1
   | 2
@@ -176,7 +176,7 @@ export type FormItemSizeNumber =
   | 12
 export type FormItemSize =
   | FormItemSizeNumber
-  | { [k in FormItemSizeBreakpoints]?: FormItemSizeNumber }
+  | { [k in FormItemSizeBreakpoint]?: FormItemSizeNumber }
 
 interface FormItemLayout {
   size?: FormItemSize

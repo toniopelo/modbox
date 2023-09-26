@@ -1,6 +1,6 @@
 {
   "name": "@modbox/forms",
-  "version": "0.7.1",
+  "version": "0.8.0",
   "description": "Form builder in typescript",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

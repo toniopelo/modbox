@@ -182,7 +182,6 @@ export type FormRenderer<FTypes extends FormItemType = FormItemType> = (props: {
   values: FormValues<FTypes>
   onChange: <T extends FTypes>(item: FormItem<T>, value: FormValue<T>) => void
   className?: string
-  sizeResolution?: FormItemSize
   children?: CustomFormItemRenderer
 }) => JSX.Element
 

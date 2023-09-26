@@ -38,16 +38,15 @@ export const FormLayout: FormRenderer = ({
   values,
   onChange,
   className = '',
-  sizeResolution = MAX_SIZE_RESOLUTION,
   children: customFormItemRenderer,
 }) => {
   const layout = computeLayout(items)
-  const gridSizeClassName = SIZES_CLASSNAMES[sizeResolution].grid
+  const gridSizeClassName = SIZES_CLASSNAMES[MAX_SIZE_RESOLUTION].grid
 
   return (
     <div className={`grid ${gridSizeClassName} gap-3 ${className}`}>
       {layout.map((layoutItem, idx) => {
-        const size = scaledSize(layoutItem.size, sizeResolution)
+        const { size } = layoutItem
         const sizeClassName = SIZES_CLASSNAMES[size].item
 
         if (layoutItem.type === 'empty') {
@@ -241,9 +240,4 @@ const computeLayout = <FTypes extends FormItemType>(
   )
 
   return layout
-}
-
-const scaledSize = (size: FormItemSize, resolution: FormItemSize) => {
-  const ratio = resolution / MAX_SIZE_RESOLUTION
-  return Math.round(size * ratio) as FormItemSize
 }

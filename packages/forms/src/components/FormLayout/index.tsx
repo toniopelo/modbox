@@ -10,14 +10,14 @@ import FormItemShortText from '../FormItemShortText'
 import {
   FormItem,
   FormItemType,
-  FormItemSize,
   FormRenderer,
   FormValue,
+  FormItemSizeNumber,
 } from '../../types'
 import { MAX_SIZE_RESOLUTION } from '../..'
 
 const SIZES_CLASSNAMES: {
-  [k in FormItemSize]: { grid: string; item: string }
+  [k in FormItemSizeNumber]: { grid: string; item: string }
 } = {
   [1]: { grid: 'grid-cols-1', item: 'col-span-1' },
   [2]: { grid: 'grid-cols-2', item: 'col-span-2' },
@@ -40,27 +40,15 @@ export const FormLayout: FormRenderer = ({
   className = '',
   children: customFormItemRenderer,
 }) => {
-  const layout = computeLayout(items)
   const gridSizeClassName = SIZES_CLASSNAMES[MAX_SIZE_RESOLUTION].grid
 
   return (
     <div className={`grid ${gridSizeClassName} gap-3 ${className}`}>
-      {layout.map((layoutItem, idx) => {
-        const { size } = layoutItem
-        const sizeClassName = SIZES_CLASSNAMES[size].item
+      {items.map((item, idx) => {
+        const sizeClassName = getItemSizeClassName(item)
 
-        if (layoutItem.type === 'empty') {
-          return (
-            <div
-              key={`empty-layout-item-${idx}`}
-              className={`${sizeClassName}`}
-            />
-          )
-        }
-
-        const item = layoutItem.content
         const overlapLabel = item.layout?.overlapLabel ?? false
-        const itemClassName = layoutItem.content.layout?.className ?? ''
+        const itemClassName = item.layout?.className ?? ''
 
         if (item.type === FormItemType.Custom) {
           const customRenderer = item.rederer || customFormItemRenderer
@@ -156,88 +144,14 @@ export const FormLayout: FormRenderer = ({
   )
 }
 
-type LayoutItem<FTypes extends FormItemType> =
-  | {
-      type: 'content'
-      size: FormItemSize
-      content: FormItem<FTypes>
-    }
-  | {
-      type: 'empty'
-      size: FormItemSize
-    }
-const computeLayout = <FTypes extends FormItemType>(
-  items: FormItem<FTypes>[],
-) => {
-  const { layout } = items.reduce<{
-    layout: LayoutItem<FTypes>[]
-    spaceLeftOnRow: FormItemSize
-  }>(
-    ({ layout, spaceLeftOnRow }, item) => {
-      const {
-        lastOnRow = false,
-        maxSize: maxSizeOption = MAX_SIZE_RESOLUTION,
-        minSize = 1,
-        firstOnRow = false,
-      } = item.layout ?? {}
+const getItemSizeClassName = (item: FormItem) => {
+  const size = item.layout?.size ?? MAX_SIZE_RESOLUTION
 
-      if (firstOnRow) {
-        return {
-          layout: [
-            ...layout,
-            ...(spaceLeftOnRow > 0 && spaceLeftOnRow < MAX_SIZE_RESOLUTION
-              ? [{ size: spaceLeftOnRow, type: 'empty' as const }]
-              : []),
-            {
-              size: maxSizeOption,
-              type: 'content' as const,
-              content: item,
-            },
-            ...(lastOnRow && maxSizeOption < MAX_SIZE_RESOLUTION
-              ? [
-                  {
-                    size: (MAX_SIZE_RESOLUTION - maxSizeOption) as FormItemSize,
-                    type: 'empty' as const,
-                  },
-                ]
-              : []),
-          ],
-          spaceLeftOnRow: (lastOnRow
-            ? MAX_SIZE_RESOLUTION
-            : MAX_SIZE_RESOLUTION - maxSizeOption ||
-              MAX_SIZE_RESOLUTION) as FormItemSize,
-        }
-      }
-
-      const maxSize = Math.max(minSize, maxSizeOption) as FormItemSize
-      const realSize =
-        maxSize <= spaceLeftOnRow
-          ? maxSize
-          : minSize <= spaceLeftOnRow
-          ? spaceLeftOnRow
-          : maxSize
-      const spaceLeftOnRowAfter = (
-        realSize >= spaceLeftOnRow
-          ? MAX_SIZE_RESOLUTION - (realSize > spaceLeftOnRow ? realSize : 0)
-          : spaceLeftOnRow - realSize
-      ) as FormItemSize
-
-      return {
-        layout: [
-          ...layout,
-          { size: realSize, type: 'content' as const, content: item },
-          ...(lastOnRow && spaceLeftOnRowAfter
-            ? [{ size: spaceLeftOnRowAfter, type: 'empty' as const }]
-            : []),
-        ],
-        spaceLeftOnRow: lastOnRow ? MAX_SIZE_RESOLUTION : spaceLeftOnRowAfter,
-      }
-    },
-    {
-      layout: [] as LayoutItem<FTypes>[],
-      spaceLeftOnRow: MAX_SIZE_RESOLUTION,
-    },
-  )
-
-  return layout
+  return typeof size === 'number'
+    ? SIZES_CLASSNAMES[size].item
+    : Object.entries(size).reduce(
+        (className, [breakpoint, size]) =>
+          `${className} ${breakpoint}:${SIZES_CLASSNAMES[size].item}`,
+        '',
+      )
 }

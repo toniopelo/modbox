@@ -160,12 +160,26 @@ export type FormValues<T extends FormItemType = FormItemType> = {
 /**
  * Layout
  */
-export type FormItemSize = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12
+export type FormItemSizeBreakpoints = 'sm' | 'md' | 'lg' | 'xl'
+export type FormItemSizeNumber =
+  | 1
+  | 2
+  | 3
+  | 4
+  | 5
+  | 6
+  | 7
+  | 8
+  | 9
+  | 10
+  | 11
+  | 12
+export type FormItemSize =
+  | FormItemSizeNumber
+  | { [k in FormItemSizeBreakpoints]?: FormItemSizeNumber }
+
 interface FormItemLayout {
-  minSize?: FormItemSize
-  maxSize?: FormItemSize
-  firstOnRow?: boolean
-  lastOnRow?: boolean
+  size?: FormItemSize
   overlapLabel?: boolean
   className?: string
 }
